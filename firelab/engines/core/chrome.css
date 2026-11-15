@@ -160,3 +160,8 @@ details.sec > p { margin-top: 7px; }
 @media (prefers-reduced-motion: reduce) {
   .pop, .dock button.ping::after { animation: none; }
 }
+/* background-music speaker button */
+.music-btn .ico { width: 19px; height: 19px; }
+/* the icon shows the state; no alarm-red fill while the music plays */
+.ibtn.music-btn[aria-pressed='true'] { background: var(--glass, rgba(14, 20, 32, 0.6)); border-color: var(--line, rgba(255, 255, 255, 0.14)); color: inherit; }
+.ibtn.music-btn[aria-pressed='false'] { opacity: 0.75; }

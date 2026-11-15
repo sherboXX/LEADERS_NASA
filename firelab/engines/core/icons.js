@@ -10,6 +10,8 @@ const ICONS = {
   report: '<rect x="5" y="4.5" width="14" height="16.5" rx="2.5"/><path class="a" d="M9 2.8h6v3.6H9z"/><path d="M8.5 11h7M8.5 14.5h7M8.5 18h4"/>',
   chart: '<path d="M4 4v16h16"/><path d="M7 15.5l3.5-4.2 3 2.6L19 7"/><circle class="a" cx="19" cy="7" r="2"/>',
   chat: '<path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><circle class="a" cx="8.5" cy="11" r="1.2"/><circle class="a" cx="12" cy="11" r="1.2"/><circle class="a" cx="15.5" cy="11" r="1.2"/>',
+  sound: '<path d="M4 9.4h3.4L12.2 5v14l-4.8-4.4H4z"/><path class="a" d="M4 9.4h3.4v5.2H4z"/><path d="M15.6 9.2a4 4 0 0 1 0 5.6M18.2 6.6a7.6 7.6 0 0 1 0 10.8"/>',
+  mute: '<path d="M4 9.4h3.4L12.2 5v14l-4.8-4.4H4z"/><path class="a" d="M4 9.4h3.4v5.2H4z"/><path d="M15.8 9.6l4.8 4.8M20.6 9.6l-4.8 4.8"/>',
   gear: '<circle cx="12" cy="12" r="5.6"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M5.5 18.5l1.9-1.9M16.6 7.4l1.9-1.9"/><circle class="a" cx="12" cy="12" r="2.2"/>',
   pin: '<path d="M12 21.2s-6.5-5.7-6.5-11.2a6.5 6.5 0 0 1 13 0c0 5.5-6.5 11.2-6.5 11.2z"/><circle class="a" cx="12" cy="10" r="2.5"/>',
   wind: '<path d="M3.5 8.5h9.8a2.6 2.6 0 1 0-2.6-2.6M3.5 12.5h14a2.6 2.6 0 1 1-2.6 2.6M3.5 16.5h6.5"/><circle class="a" cx="19.5" cy="8.5" r="1.5"/>',

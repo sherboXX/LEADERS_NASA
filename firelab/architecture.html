@@ -13,6 +13,7 @@
   main { max-width: 1180px; margin: 0 auto; padding: 28px 20px 60px; }
   .top { display: flex; grid-template-columns: none; justify-content: space-between; margin-bottom: 26px; pointer-events: auto; }
   .top a { color: var(--blue); font-size: 15px; }
+  .top-r { display: flex; align-items: center; gap: 14px; }
   h1 { margin: 0 0 6px; font: 500 34px/1.15 var(--font-head); letter-spacing: -0.01em; text-wrap: balance; }
   h2 { margin: 44px 0 6px; font: 500 22px/1.25 var(--font-head); }
   p { margin: 0 0 12px; max-width: 72ch; color: #d5dbe5; }
@@ -42,7 +43,7 @@
 <main>
   <header class="top">
     <div class="brand">FREE<span>FALL</span></div>
-    <a href="index.html">All experiments</a>
+    <span class="top-r"><a href="index.html">All experiments</a><span id="music"></span></span>
   </header>
 
   <h1>How Freefall was built</h1>
@@ -116,6 +117,11 @@
   <p>The code sits beside the NASA data in the team repository, in the <code>firelab</code> folder of the <code>freefall-website</code> branch. <a href="https://github.com/sherboXX/LEADERS_NASA/blob/freefall-website/firelab/README.md">README.md</a> says how to run it; <a href="https://github.com/sherboXX/LEADERS_NASA/blob/freefall-website/firelab/docs/DEVELOPMENT.md">docs/DEVELOPMENT.md</a> has the notes for adding an experiment, the checks to run and how publishing works.</p>
 </main>
 
+<script type="module">
+  import { startMusic, musicButton } from './engines/core/music.js';
+  document.getElementById('music').replaceWith(musicButton());
+  startMusic();
+</script>
 <script>
 // The flow chart is drawn from this short description so it stays easy to change.
 const COL = 226, ROW = 100, W = 192, H = 56, X0 = 16, Y0 = 44, LANE = 40;

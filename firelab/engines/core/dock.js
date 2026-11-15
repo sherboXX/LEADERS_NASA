@@ -4,6 +4,7 @@
 import { el, segs } from './ui.js';
 import { prefs, setPref, onPrefs, applyPrefs } from './prefs.js';
 import { ic } from './icons.js';
+import { setMusic } from './music.js';
 
 const wide = matchMedia('(min-width: 1101px)');
 /** A Freefall icon (see icons.js) sized to sit in a line of text. */
@@ -103,6 +104,8 @@ export function buildSettings({ dock, scope, displays = [], links = [] }) {
     displays.map((d) => check(d.label, !prefs.hide[d.key], (on) => { hide(d.key, !on); d.apply(on); })),
     check('Icons', prefs.emoji, (on) => setPref('emoji', on)),
     check('Play the steps when the page opens', prefs.intro, (on) => setPref('intro', on)),
+    el('h4', { text: 'Sound' }),
+    check('Background music (quiet)', prefs.music, (on) => setMusic(on)),
     el('h4', { text: 'Tabs in the dock' }),
     dock.tabs().filter((t) => t.id !== 'settings').map((t) => check([em(t.glyph), t.label], !prefs.hide[`${scope}.tab.${t.id}`],
       (on) => hide(`${scope}.tab.${t.id}`, !on), t.adv)),
