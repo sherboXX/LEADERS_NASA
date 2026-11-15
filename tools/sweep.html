@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Freefall: page sweep</title>
+<style>
+  body { font: 15px/1.5 system-ui, sans-serif; background: #0b0f16; color: #e8edf5; margin: 24px; }
+  table { border-collapse: collapse; }
+  td, th { padding: 4px 12px; border-bottom: 1px solid #223; text-align: left; white-space: nowrap; }
+  .bad { color: #ff6b57; } .ok { color: #58d68d; }
+  iframe { position: fixed; right: 16px; bottom: 16px; width: 520px; height: 320px; border: 1px solid #334; background: #000; }
+</style>
+</head>
+<body>
+<h1>Page sweep</h1>
+<p>Opens every experiment in turn and checks that it starts, draws, gives finite numbers and found every file it asked for.
+  Add <code>?app=1</code> to open each station view as well, or <code>?only=flex,bass</code> to check a few.</p>
+<p id="sum">Running…</p>
+<table>
+  <thead><tr><th>Page</th><th>Started</th><th>Draws</th><th>Numbers</th><th>Missing files</th><th>Files</th><th>MB sent</th><th>MB unpacked</th><th>Draw calls</th><th>Triangles</th><th>Seconds</th></tr></thead>
+  <tbody id="rows"></tbody>
+</table>
+<script type="module">
+import { CATALOG } from '../engines/catalog.js';
+
+const args = new URLSearchParams(location.search);
+const only = (args.get('only') || '').split(',').filter(Boolean);
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const finite = (obj, depth = 2) => Object.values(obj || {}).every((v) => (typeof v === 'number' ? Number.isFinite(v)
+  : v && typeof v === 'object' && depth > 0 && !ArrayBuffer.isView(v) ? finite(v, depth - 1) : true));
+
+async function visit(name, url, isReady, inspect) {
+  const frame = document.createElement('iframe');
+  frame.src = url;
+  document.body.append(frame);
+  const t0 = performance.now();
+  const row = { name, url, started: false, draws: false, numbers: false, missing: [], files: 0, sent: 0, unpacked: 0, calls: '', triangles: '', seconds: 0 };
+  while (performance.now() - t0 < 30000) {
+    await wait(300);
+    try { if (isReady(frame.contentWindow)) { row.started = true; break; } } catch { /* still loading */ }
+  }
+  row.seconds = +((performance.now() - t0) / 1000).toFixed(1);
+  if (row.started) {
+    try { await inspect(frame.contentWindow, row); } catch (err) { row.error = String(err); }
+    const files = frame.contentWindow.performance.getEntriesByType('resource');
+    row.files = files.length;
+    row.sent = +(files.reduce((s, f) => s + (f.transferSize || 0), 0) / 1e6).toFixed(2);
+    row.unpacked = +(files.reduce((s, f) => s + (f.decodedBodySize || 0), 0) / 1e6).toFixed(2);
+    row.missing = files.filter((f) => f.responseStatus >= 400 && !f.name.endsWith('favicon.ico')).map((f) => `${f.name.split('/').pop()} ${f.responseStatus}`);
+  }
+  frame.remove();
+  return row;
+}
+
+const lab = async (w, row) => {
+  w.document.querySelectorAll('.intro .btn').forEach((b) => { if (b.textContent === 'Skip') b.click(); });
+  w.fireLab.seek(1);
+  await wait(1200);
+  const canvas = w.document.querySelector('canvas');
+  const gl = canvas && (canvas.getContext('webgl2') || canvas.getContext('webgl'));
+  row.draws = !!gl && !gl.isContextLost() && canvas.width > 0;
+  const st = w.fireLab.state;
+  row.numbers = finite(st.live || st.plan);
+  row.calls = st.frameMs?.calls ?? '';
+  row.triangles = st.frameMs?.triangles ?? '';
+};
+const station = async (w, row) => {
+  await wait(2500);
+  const canvas = w.document.querySelector('canvas');
+  row.draws = !!canvas && canvas.width > 0;
+  row.numbers = true;
+};
+
+const rows = [];
+const body = document.getElementById('rows');
+const cell = (text, cls) => `<td${cls ? ` class="${cls}"` : ''}>${text}</td>`;
+const flag = (ok) => cell(ok ? 'yes' : 'NO', ok ? 'ok' : 'bad');
+function show(r) {
+  rows.push(r);
+  body.insertAdjacentHTML('beforeend', `<tr>${cell(r.name)}${flag(r.started)}${flag(r.draws)}${flag(r.numbers)}${
+    cell(r.missing.join(', ') || 'none', r.missing.length ? 'bad' : 'ok')}${cell(r.files)}${cell(r.sent)}${cell(r.unpacked)}${cell(r.calls)}${cell(r.triangles)}${cell(r.seconds)}</tr>`);
+}
+
+for (const x of CATALOG) {
+  if (only.length && !only.includes(x.id)) continue;
+  show(await visit(x.name, `../${x.url}`, (w) => !!(w.fireLab && w.fireLab.state), lab));
+  if (args.get('app')) show(await visit(`${x.name} · station`, `../application/index.html?exp=${x.id}`, (w) => !!(w.FREEFALL_EXPERIMENTS && w.document.querySelector('canvas')), station));
+}
+const bad = rows.filter((r) => !r.started || !r.draws || !r.numbers || r.missing.length);
+document.getElementById('sum').textContent = `${rows.length} pages checked, ${bad.length} with problems${bad.length ? `: ${bad.map((r) => r.name).join(', ')}` : ''}.`;
+window.sweepResult = { done: true, pages: rows.length, problems: bad.map((r) => r.name), rows };
+</script>
+</body>
+</html>
