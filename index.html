@@ -3,57 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Freefall: fire in space, yours to run</title>
+<title>Freefall: experiments</title>
 <meta name="theme-color" content="#03060c">
+<script>
+  // The site opens on the space station with the guide's chat box in front
+  // (application/index.html?start). This page is the list of experiments: index.html#experiments.
+  if (location.hash !== '#experiments') location.replace('application/index.html?start');
+</script>
 <link rel="stylesheet" href="engines/core/ui.css">
 <link rel="stylesheet" href="engines/core/chrome.css">
 <style>
   html, body { height: auto; }
-  body { font-size: 17px; line-height: 1.55; background: var(--void); }
-  [hidden] { display: none !important; }
+  body { font-size: 17px; line-height: 1.55; min-height: 100vh; background: radial-gradient(1100px 620px at 78% -8%, rgba(11, 61, 145, 0.55), transparent 62%), radial-gradient(700px 420px at 4% 12%, rgba(252, 61, 33, 0.14), transparent 60%), var(--void); }
+  main { max-width: 1240px; margin: 0 auto; padding: 26px 22px 70px; }
   .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
   .bar .brand { font-size: 21px; color: var(--fg); text-decoration: none; }
   .bar a { color: var(--blue); font-size: 15px; }
   .bar-r { display: flex; align-items: center; gap: 14px; }
-
-  /* ---- start screen: the station in the background, the guide and two tabs below it ---- */
-  .home { position: relative; isolation: isolate; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; overflow: hidden; }
-  .home-bg { position: absolute; inset: -2%; z-index: -1; background: #03060c url(img/home-iss.jpg) 50% 34% / cover no-repeat; animation: drift 70s ease-in-out infinite alternate; }
-  .home-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(3, 6, 12, 0.35) 0%, rgba(3, 6, 12, 0) 22%, rgba(3, 6, 12, 0.25) 48%, rgba(3, 6, 12, 0.88) 78%, #03060c 100%); }
-  @keyframes drift { from { transform: scale(1.0); } to { transform: scale(1.07) translateY(-1.2%); } }
-  .home > .bar { padding: 22px 28px 0; }
-  .home-main { margin-top: auto; align-self: center; width: min(920px, 100%); padding: 0 20px 6vh; text-align: center; }
-  .home-main.asked h1 { display: none; }   /* once a conversation starts it takes the space */
-  .home-main h1 { margin: 0 0 18px; font: 600 clamp(30px, 4.4vw, 48px)/1.08 var(--font-head); letter-spacing: 0.01em; text-wrap: balance; text-shadow: 0 2px 22px rgba(0, 0, 0, 0.9); }
-  .chat { text-align: left; padding: 14px; border-radius: 14px; }
-  .chat form { display: flex; gap: 8px; }
-  .chat input { flex: 1; min-width: 0; height: 54px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--line-strong); background: rgba(0, 0, 0, 0.45); color: var(--fg); font: 17px var(--font-body); }
-  .chat input::placeholder { color: var(--muted); }
-  .chat form button { height: 54px; padding: 0 24px; border-radius: 10px; border: 0; background: var(--accent); color: #1a0a00; font: 600 17px var(--font-body); cursor: pointer; }
-  .chat form button:hover { background: #ff5a40; }
-  .chat .samples { margin-top: 10px; gap: 8px; }
-  .chat .samples button { font-size: 15px; padding: 6px 13px; border-radius: 999px; color: #c9d2df; }
-  .chat .answer { margin: 12px 0 0; padding: 12px 14px; font-size: 17px; line-height: 1.55; max-height: 30vh; overflow: auto; }
-  .chat .answer:not(.used) { display: none; }
-  .chat .answer .route { font-size: 14px; }
-  .home-links { display: flex; flex-wrap: wrap; gap: 8px; }
-  .home-links:not(:empty) { margin-top: 10px; }
-  .home-links a { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 10px; border-radius: 999px; border: 1px solid rgba(79, 157, 255, 0.55); background: rgba(79, 157, 255, 0.12); color: var(--fg); text-decoration: none; font-size: 15px; }
-  .home-links a:hover { background: rgba(79, 157, 255, 0.25); }
-  .home-links .ico { width: 20px; height: 20px; }
-  .home-links small { color: var(--muted); font-size: 13px; }
-  .home-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
-  .home-tabs a { display: flex; align-items: center; justify-content: center; gap: 10px; height: 62px; border-radius: 12px; text-decoration: none; color: var(--fg); font: 600 19px var(--font-head); letter-spacing: 0.02em; border: 1px solid var(--line-strong); background: var(--glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: border-color 0.15s, background 0.15s; }
-  .home-tabs a:hover { border-color: var(--accent); background: rgba(252, 61, 33, 0.16); }
-  .home-tabs .ico { width: 26px; height: 26px; }
-  .credit { position: absolute; right: 16px; bottom: 8px; margin: 0; font-size: 12px; color: rgba(255, 255, 255, 0.42); }
-  @media (max-width: 900px) { .home-bg { background-image: url(img/home-iss-small.jpg); background-position: 50% 30%; } }
-  @media (max-width: 560px) { .home > .bar { padding: 16px 16px 0; } .bar-r a { display: none; } .chat form button { padding: 0 16px; } .home-tabs a { height: 56px; font-size: 17px; } }
-  @media (prefers-reduced-motion: reduce) { .home-bg { animation: none; } }
-
-  /* ---- Experiments screen: the ranked gallery ---- */
-  .gallery { min-height: 100vh; background: radial-gradient(1100px 620px at 78% -8%, rgba(11, 61, 145, 0.55), transparent 62%), radial-gradient(700px 420px at 4% 12%, rgba(252, 61, 33, 0.14), transparent 60%), var(--void); }
-  .gallery main { max-width: 1240px; margin: 0 auto; padding: 26px 22px 70px; }
   .screen-tabs { margin: 30px 0 4px; }
   .screen-tabs .tabs { display: inline-flex; }
   .screen-tabs .tabs a, .screen-tabs .tabs span { display: inline-flex; align-items: center; gap: 8px; padding: 9px 20px; border-radius: 3px; font: 600 16px var(--font-body); color: var(--fg); text-decoration: none; }
@@ -80,31 +46,14 @@
   .meter { flex: 1; height: 9px; border-radius: 2px; position: relative; overflow: hidden; background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.2) 0 1.5px, transparent 1.5px 4px); }
   .meter i { position: absolute; inset: 0 auto 0 0; background: repeating-linear-gradient(90deg, var(--amber) 0 1.5px, transparent 1.5px 4px); }
   .foot { margin-top: 34px; font-size: 14px; color: var(--muted); max-width: 80ch; }
+  @media (max-width: 560px) { .bar-r a { display: none; } }
   @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
 </style>
 </head>
 <body>
-<section class="home" id="home" aria-label="Start">
-  <div class="home-bg" aria-hidden="true"></div>
-  <header class="bar">
-    <a class="brand" href="./" data-home>FREE<span>FALL</span></a>
-    <div class="bar-r"><a href="architecture.html">How this was built</a><span class="music-slot"></span></div>
-  </header>
-  <div class="home-main">
-    <h1>Fire behaves differently in space.</h1>
-    <div class="chat glass" id="chat"></div>
-    <nav class="home-tabs" aria-label="Go to">
-      <a href="#experiments" id="tab-experiments">Experiments</a>
-      <a href="application/index.html" id="tab-application">Application</a>
-    </nav>
-  </div>
-  <p class="credit">International Space Station model: NASA 3D Resources</p>
-</section>
-
-<div class="gallery" id="experiments" hidden>
 <main>
   <header class="bar">
-    <a class="brand" href="./" data-home title="Start">FREE<span>FALL</span></a>
+    <a class="brand" href="application/index.html?start" title="Start">FREE<span>FALL</span></a>
     <div class="bar-r"><a href="architecture.html">How this was built</a><span class="music-slot"></span></div>
   </header>
   <nav class="screen-tabs" aria-label="Section"><div class="tabs"><span id="here-experiments">Experiments</span><a href="application/index.html" id="go-application">Application</a></div></nav>
@@ -116,7 +65,6 @@
   <ul class="grid" id="grid"></ul>
   <p class="foot">Results come from NASA's Physical Sciences Informatics database. Each lab runs a simplified model, checked against those results where a table exists; the Result tab in every lab says how far to trust it.</p>
 </main>
-</div>
 
 <script type="module">
   import { CATALOG, PILLARS } from './engines/catalog.js';
@@ -124,51 +72,13 @@
   import { el } from './engines/core/ui.js';
   import { applyPrefs } from './engines/core/prefs.js';
   import { startMusic, musicButton } from './engines/core/music.js';
-  import { createAsk } from './engines/core/ask.js';
-  import { homeGuide } from './engines/core/home.js';
 
   applyPrefs();
   for (const slot of document.querySelectorAll('.music-slot')) slot.replaceWith(musicButton());
   startMusic();
-  document.getElementById('tab-experiments').prepend(ic('flask'));
-  document.getElementById('tab-application').prepend(ic('station'));
   document.getElementById('here-experiments').prepend(ic('flask'));
   document.getElementById('go-application').prepend(ic('station'));
 
-  // ---- the two screens: start (no hash) and Experiments (#experiments) ----
-  const home = document.getElementById('home');
-  const gallery = document.getElementById('experiments');
-  function route() {
-    const onGallery = location.hash === '#experiments';
-    home.hidden = onGallery;
-    gallery.hidden = !onGallery;
-    document.title = onGallery ? 'Freefall: experiments' : 'Freefall: fire in space, yours to run';
-    if (onGallery) scrollTo(0, 0);
-  }
-  addEventListener('hashchange', route);
-  for (const a of document.querySelectorAll('[data-home]')) {
-    a.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (location.hash) history.pushState(null, '', location.pathname + location.search);
-      route();
-    });
-  }
-  route();
-
-  // ---- the guide ----
-  const guide = homeGuide();
-  const ask = createAsk({
-    placeholder: 'Ask about fire in space',   // short enough to show in full on a phone
-    samples: ['Why is fire a ball in space?', 'How is smoke detected in orbit?', 'How do you put out a fire in space?'],
-    system: guide.system,
-    local: guide.local,
-    act: guide.act,
-    onAsk: () => { guide.clear(); answer.classList.add('used'); document.querySelector('.home-main').classList.add('asked'); },
-  });
-  const [form, chips, answer] = ask.el;
-  document.getElementById('chat').append(form, chips, answer, guide.links);
-
-  // ---- the ranked gallery ----
   const grid = document.getElementById('grid');
   const cards = [...CATALOG].sort((a, b) => b.score - a.score).map((x, i) => {
     const card = el('li', { 'data-pillar': x.pillar },
