@@ -1,0 +1,4 @@
+.openai-key
+__pycache__/
+# working notes for the build sessions; kept on the author's computer only
+docs/HANDOFF.md
