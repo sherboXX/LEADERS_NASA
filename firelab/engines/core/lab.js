@@ -304,7 +304,7 @@ export async function createLab(host, spec, options = {}) {
     seek: (t) => { S.t = t; S.playing = false; scene3d?.snap?.(); },
     intro: startIntro, ask: (q) => guide.ask(q), dock: shell.dock,
     benchmark: (n) => stage?.benchmark(n),
-    get state() { return { ...S, plan, notes, live: spec.model.at(plan, S.t) }; },
+    get state() { return { ...S, plan, notes, live: spec.model.at(plan, S.t), frameMs: stage?.frameMs() }; },
     dispose() { cancelAnimationFrame(raf); stage?.dispose(); chart.destroy(); shell.root.remove(); },
   };
 }

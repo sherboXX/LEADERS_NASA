@@ -9,10 +9,10 @@
 <link rel="stylesheet" href="engines/core/chrome.css">
 <style>
   html, body { height: auto; }
-  body { font-size: 15px; line-height: 1.6; }
+  body { font-size: 17px; line-height: 1.6; }
   main { max-width: 1180px; margin: 0 auto; padding: 28px 20px 60px; }
   .top { display: flex; grid-template-columns: none; justify-content: space-between; margin-bottom: 26px; pointer-events: auto; }
-  .top a { color: var(--blue); font-size: 13.5px; }
+  .top a { color: var(--blue); font-size: 15px; }
   h1 { margin: 0 0 6px; font: 500 34px/1.15 var(--font-head); letter-spacing: -0.01em; text-wrap: balance; }
   h2 { margin: 44px 0 6px; font: 500 22px/1.25 var(--font-head); }
   p { margin: 0 0 12px; max-width: 72ch; color: #d5dbe5; }
@@ -30,7 +30,7 @@
   .flow .tag { fill: #c9d2df; font-size: 11.5px; }
   .key { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; color: var(--muted); }
   .key i { display: inline-block; width: 12px; height: 12px; margin-right: 6px; border-radius: 3px; border: 1.5px solid; vertical-align: -1px; }
-  table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 15.5px; }
   th, td { text-align: left; vertical-align: top; padding: 10px 14px 10px 0; border-bottom: 1px solid var(--line); }
   th { font: 500 13px var(--font-head); color: var(--muted); }
   td:first-child { width: 22%; color: var(--fg); font-weight: 500; }
@@ -49,8 +49,8 @@
   <p class="lede">Freefall turns NASA's microgravity fire experiments into something you can run yourself. Real test results from the Space Station feed a small physics model; the model drives a 3D flame; a guide answers questions; and the station view shows where each result matters.</p>
 
   <h2>The system as a flow chart</h2>
-  <p>Three paths run through the system. Follow the arrows from left to right.</p>
-  <div class="flow glass"><svg id="chart" role="img" aria-label="Flow chart of the Freefall system: from NASA data to a running experiment, what happens when you open an experiment, and what happens when you ask a question"></svg></div>
+  <p>Four paths run through the system. Follow the arrows from left to right.</p>
+  <div class="flow glass"><svg id="chart" role="img" aria-label="Flow chart of the Freefall system: from NASA data to a running experiment, what happens when you open an experiment, what happens when you ask a question, and how the site is published"></svg></div>
   <p class="key">
     <span><i style="border-color:#4f9dff"></i>NASA data</span>
     <span><i style="border-color:rgba(255,255,255,.5)"></i>Freefall code</span>
@@ -76,6 +76,44 @@
 
   <h2>How the guide stays honest</h2>
   <p>The guide can use ChatGPT, but it is never the source of a number. ChatGPT is told the current settings and what the model predicts, and it replies with words plus an instruction such as "plot burn rate against oxygen". Freefall then computes that curve from its own model and draws it. If no key is set, a built-in guide answers the common questions the same way.</p>
+  <h2>What is inside</h2>
+  <p>Twenty experiments run on five engines. Experiments that flew on the same kind of hardware share an engine, so a fix or a new control reaches all of them at once.</p>
+  <table>
+    <thead><tr><th scope="col">Engine</th><th scope="col">Experiments</th><th scope="col">What its model works out</th><th scope="col">NASA data behind it</th></tr></thead>
+    <tbody>
+      <tr><td>Droplet</td><td>FLEX, FLEX-2, CFI</td><td>How fast a fuel drop shrinks, how big the flame is, and whether it burns out, goes out early, or carries on as an invisible cool flame.</td><td>261 FLEX tests (PSI-69), fitted. CFI constants from PSI-117.</td></tr>
+      <tr><td>Solid</td><td>BASS, BASS-II, Saffire-I, II and III</td><td>The least oxygen each material needs, shifted by airflow, gravity, pressure and thickness, and how fast the flame then spreads.</td><td>The nine Saffire-II samples (PSI-99).</td></tr>
+      <tr><td>Burner</td><td>s-Flame, Flame Design, CFI-G, BRE</td><td>Where the flame sits, how hot it is, how much soot it makes, and whether heat loss puts it out.</td><td>36 Flame Design tests (PSI-10) and 33 CFI-G ignitions (PSI-159).</td></tr>
+      <tr><td>Jet</td><td>SPICE, SLICE, CLD Flame, E-FIELD Flames</td><td>Flame length, the point where it starts to smoke, and when it lifts off or blows out.</td><td>36 SPICE test conditions to replay. Trends only.</td></tr>
+      <tr><td>Smoke</td><td>SAME, SAME-R, DAFT, DAFT-2</td><td>How big the smoke particles are for each material, how they age, and which of two detector types notices them.</td><td>Reported trends only; there is no table to fit.</td></tr>
+    </tbody>
+  </table>
+  <p>Around the engines sit four shared parts: the <b>stage</b> (3D view, glow, labels), the <b>flame renderer</b> (it adds up light along each line of sight through the flame), the <b>shell</b> (title, dock of tabs, settings) and the <b>guide</b> (answers, sketches, steps). The <b>station view</b> is the team's own Freefall Fire Console, joined to the labs by a small bridge that knows where each experiment matters on the ISS.</p>
+
+  <h2>How it was programmed</h2>
+  <p><b>No build step.</b> The site is plain HTML, CSS and JavaScript modules, with Three.js and the fonts kept in the project. It runs from any folder a web server can read, which is why it can be hosted as static files.</p>
+  <p><b>Three small files per experiment.</b> <code>model.js</code> is pure arithmetic: <code>plan(settings)</code> works out the whole burn and <code>at(plan, time)</code> gives the state at one moment. It draws nothing, so it can be tested without a browser. <code>scene.js</code> builds the hardware and the flame from that state. <code>spec.js</code> lists the controls, readings and words. One shared builder turns a spec into a whole lab page.</p>
+  <p><b>Real data first.</b> A Python script reads the NASA tables the team collected and writes two small data files: the tests themselves, and the constants fitted to them. The models read those constants, and every lab can replay a logged test next to the model's prediction.</p>
+  <p><b>The flame is computed, not painted.</b> A short shader gives the light emitted and absorbed at each point around the fuel. The renderer steps along each line of sight and adds it up, so a thin flame sheet looks bright at its edge and faint face-on, as a real one does. The FLEX scene was then matched frame by frame against NASA's flight video.</p>
+  <p><b>Four phases.</b> First a plan and a map of the data. Then one pilot lab, FLEX, fitted to its tests and reviewed. Then the other four engines, the ranked gallery and the link to the station view. Last, checking: every model against the measurements it can be compared with, every page opened by script, and publishing.</p>
+  <p><b>Who did what.</b> The team chose the experiments, gathered the NASA data, built the station view and directed and reviewed the design at each phase. The code for the labs was written with an AI coding assistant (Claude Code) under that direction. ChatGPT is optional and only words the guide's answers.</p>
+
+  <h2>How it was checked</h2>
+  <p>Each model was run against the NASA measurements it can be compared with. The full report, with the limits of each model, is in <a href="docs/VALIDATION.md">docs/VALIDATION.md</a>; <code>node tools/validate.mjs</code> prints the same figures.</p>
+  <table>
+    <thead><tr><th scope="col">Engine</th><th scope="col">Compared with</th><th scope="col">Result</th></tr></thead>
+    <tbody>
+      <tr><td>Droplet</td><td>261 FLEX tests</td><td>How the burn ends matches in 219 (84%). Burn-rate fit: R&sup2; 0.88 for methanol, 0.65 for heptane.</td></tr>
+      <tr><td>Solid</td><td>9 Saffire-II samples</td><td>Silicone does not burn in orbit (4 of 4) and the cotton blend spreads, as measured. Thin acrylic burned less in orbit than the model says.</td></tr>
+      <tr><td>Burner</td><td>36 Flame Design tests</td><td>Flame temperature within 68 K on average (worst 190 K); flame position within 0.004 on average.</td></tr>
+      <tr><td>Burner</td><td>33 CFI-G ignitions</td><td>The model lights all 33; 5 did not light in orbit. It does not predict ignition failures.</td></tr>
+      <tr><td>Jet, Smoke</td><td>Reported trends</td><td>No table to compare with. Their Result tabs say so.</td></tr>
+    </tbody>
+  </table>
+  <p>Every lab labels its model "illustrative". These are teaching models tuned to real results, not design tools.</p>
+
+  <h2>Run it or change it</h2>
+  <p>The code sits beside the NASA data in the team repository, in the <code>firelab</code> folder. <a href="README.md">README.md</a> says how to run it; <a href="docs/DEVELOPMENT.md">docs/DEVELOPMENT.md</a> has the notes for adding an experiment, the checks to run and how publishing works.</p>
 </main>
 
 <script>
@@ -85,17 +123,18 @@ const lanes = [
   { row: 0, title: '1 · From NASA data to a running experiment' },
   { row: 2, title: '2 · What happens when you open an experiment' },
   { row: 4, title: '3 · What happens when you ask a question' },
+  { row: 6, title: '4 · How it reaches you' },
 ];
 const laneOf = (row) => Math.floor(row / 2);
 const N = {
   psi: [0, 0, 'data', 'NASA PSI database', 'open results from orbit'],
   repo: [1, 0, 'data', 'Team data folder', 'test tables and reports'],
   build: [2, 0, '', 'build_data.py', 'cleans and fits the tests'],
-  json: [3, 0, 'data', 'flex.json', '261 real tests + the fit'],
-  model: [4, 0, '', 'model.js', 'physics fitted to the tests'],
+  json: [3, 0, 'data', 'data files', 'real tests + fitted constants'],
+  model: [4, 0, '', 'model.js', 'one small model per engine'],
   core: [2, 1, '', 'core/', 'stage, dock, sketch, steps'],
   scene: [3, 1, '', 'scene.js', '3D hardware and flame'],
-  engine: [4, 1, '', 'engine.js', 'controls, charts, replay'],
+  engine: [4, 1, '', 'The lab page', 'controls, charts, replay'],
   user: [0, 2, '', 'Student or engineer', 'opens an experiment'],
   steps: [1, 2, '', 'Steps video', 'how the test is done'],
   lab: [2, 2, '', 'The lab', 'Beginner or Advanced'],
@@ -109,10 +148,16 @@ const N = {
   local: [2, 5, 'ai', 'Built-in guide', 'keyword rules'],
   brain: [3, 4, '', 'brain.js', 'real numbers from model.js'],
   sketch: [4, 4, '', 'sketch.js', 'draws the answer'],
+  dev: [0, 6, '', 'Team computer', 'edit, then run the checks'],
+  checks: [1, 6, '', 'Check scripts', 'models, pages, wiring'],
+  pub: [2, 6, '', 'publish.py', 'builds two branches'],
+  hub: [3, 6, 'data', 'GitHub repository', 'code beside the NASA data'],
+  pages: [4, 6, 'app', 'GitHub Pages', 'static files, no server'],
 };
 const E = [
   ['psi', 'repo'], ['repo', 'build'], ['build', 'json'], ['json', 'model'], ['model', 'engine'], ['core', 'scene'], ['scene', 'engine'],
   ['user', 'steps'], ['steps', 'lab'], ['lab', 'tab'], ['tab', 'bridge'], ['bridge', 'console'], ['console', 'finding'],
+  ['dev', 'checks'], ['checks', 'pub'], ['pub', 'hub'], ['hub', 'pages'],
   ['ask', 'key'], ['key', 'gpt', 'yes'], ['key', 'local', 'no'], ['gpt', 'brain'], ['local', 'brain'], ['brain', 'sketch'],
 ];
 const pos = (id) => { const [c, r] = N[id]; return { x: X0 + c * COL, y: Y0 + r * ROW + laneOf(r) * LANE, cx: X0 + c * COL + W / 2, cy: Y0 + r * ROW + laneOf(r) * LANE + H / 2 }; };
@@ -146,7 +191,7 @@ for (const [id, [, , kind, t1, t2]] of Object.entries(N)) {
     t2 ? `<text class="t2" x="${p.cx}" y="${p.cy + 15}" text-anchor="middle">${esc(t2)}</text>` : ''}</g>`;
 }
 const chart = document.getElementById('chart');
-chart.setAttribute('viewBox', `0 0 ${X0 * 2 + 4 * COL + W} ${Y0 + 6 * ROW + 2 * LANE}`);
+chart.setAttribute('viewBox', `0 0 ${X0 * 2 + 4 * COL + W} ${Y0 + 7 * ROW + 3 * LANE}`);
 chart.innerHTML = svg;
 </script>
 </body>

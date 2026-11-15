@@ -24,6 +24,7 @@ export function createStage(host, options = {}) {
   const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = o.exposure;
+  renderer.info.autoReset = false;      // counted per frame below, across every pass
   const canvas = renderer.domElement;
   canvas.className = 'fl-canvas';
   canvas.setAttribute('role', 'img');
@@ -157,6 +158,7 @@ export function createStage(host, options = {}) {
   let acc = 0;
   let frames = 0;
   let lastMs = 0;
+  let drawn = { calls: 0, triangles: 0 };
   function frame(now) {
     const raw = Math.max((now - last) / 1000, 0);
     const dt = Math.min(raw, 0.05) || 0.016;
@@ -181,6 +183,8 @@ export function createStage(host, options = {}) {
       }
     }
     composer.render(dt);
+    drawn = { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles };
+    renderer.info.reset();
     updateLabels();
     // drop resolution (never raise it again) if the device cannot keep up; long gaps mean
     // the browser throttled a background tab, which says nothing about the device
@@ -226,7 +230,7 @@ export function createStage(host, options = {}) {
       for (let i = 0; i < n; i++) { frame(performance.now()); gl.finish(); }
       return +((performance.now() - t0) / n).toFixed(2);
     },
-    frameMs: () => ({ ms: +lastMs.toFixed(1), pixelRatio: pr, width: w, height: h }),
+    frameMs: () => ({ ms: +lastMs.toFixed(1), pixelRatio: pr, width: w, height: h, ...drawn }),
     addVolume: (v) => { volumes.push(v.mesh); scene.add(v.mesh); },
     addLabel,
     showLabels: (on) => { labelLayer.hidden = !on; },
