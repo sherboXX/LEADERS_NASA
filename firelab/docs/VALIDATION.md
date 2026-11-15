@@ -11,7 +11,7 @@ Reproduce the model figures with `node tools/validate.mjs`, and the page checks 
 | Engine | Experiments | Compared with | Result | Trust it for |
 |---|---|---|---|---|
 | Droplet | FLEX, FLEX-2, CFI | 261 FLEX tests (PSI-69) | How the burn ends matches in 219 of 261 (84%) | Trends and rough sizes within the tested range |
-| Solid | BASS, BASS-II, Saffire-I/II/III | 9 Saffire-II samples | Burns or does not burn: right for silicone and the cotton blend; thin acrylic is overstated | Which materials burn, and the direction of each effect |
+| Solid | BASS, BASS-II, Saffire-I/II/III | 9 Saffire-II samples | Burns or does not burn: right for all nine | Which materials burn, and the direction of each effect |
 | Burner | s-Flame, Flame Design, CFI-G, BRE | 36 Flame Design tests, 33 CFI-G ignitions | Temperature within 68 K on average; does not predict failed ignitions | Flame temperature and position |
 | Jet | SPICE, SLICE, CLD Flame, E-FIELD | Nothing measured | Not compared | Direction of each effect only |
 | Smoke | SAME, SAME-R, DAFT, DAFT-2 | Nothing measured | Not compared | Direction of each effect only |
@@ -57,12 +57,15 @@ The nine Saffire-II samples, run at their logged conditions in orbit:
 |---|---|---|
 | Silicone 0.27, 0.37, 0.61, 1.03 mm | About 0 | Does not burn (4 of 4) |
 | Cotton-fibreglass 0.37 mm (two samples) | 29 cm, the whole sample | Spreads at 2.28 mm/s |
-| Acrylic (PMMA) 0.37 mm | 5 cm and 0 | Spreads at 2.93 mm/s: overstated |
+| Nomex 0.37 mm, behind a 5 cm acrylic starter strip | Starter burned, Nomex did not light | Does not burn |
 | Acrylic (PMMA) 10 mm (two samples) | About 10 cm | Spreads slowly, 0.12 mm/s |
 
-When the model was tuned, the cotton spread rate was set against the 2.1 to 2.6 mm/s
-recorded for Saffire-II; that range was not re-read for this report. The thin acrylic
-sample went out in orbit where the model keeps it burning.
+Burn or no burn agrees for all nine. Only the outcome is compared here, not the distance
+burned. When the model was tuned, the cotton spread rate was set against the 2.1 to 2.6
+mm/s recorded for Saffire-II; that range was not re-read for this report.
+
+While writing this report the Nomex sample was found to be labelled as thin acrylic in
+`data/labs.json`. `tools/build_data.py` was corrected and the data rebuilt.
 
 ## Burner engine
 
@@ -130,7 +133,7 @@ geometry; expect a long wait on a slow connection.
 | Solid, Jet | 49 to 51 | 1,300 to 1,600 |
 
 Each lab measures its own frame time and lowers its resolution if a frame takes longer
-than 27 ms. On the development laptop the FLEX lab stayed at full resolution.
+than 27 ms. Whether that happens on a given device has not been measured.
 
 ## Not checked
 

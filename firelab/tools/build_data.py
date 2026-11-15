@@ -140,11 +140,14 @@ def build_labs():
         if not re.match(r"^2-\d", r[0]):
             continue
         last = name = r[1] or last
-        key = "silicone" if "ilicone" in name else "cotton" if "otton" in name else "pmma"
+        # sample 2-7 is a Nomex sheet behind a short PMMA starter strip: the Nomex is what is under test
+        key = "silicone" if "ilicone" in name else "cotton" if "otton" in name else "nomex" if "omex" in name else "pmma"
+        shown = "Nomex behind a PMMA starter strip" if key == "nomex" else name.split("&")[0].strip()
+        logged = lambda text: re.sub(r"\s*\(note \d\)", "", text).strip()[:18] or "-"
         m = re.search(r"(\d*\.?\d+)\s*(mm|cm)", r[2].replace("037", "0.37"))
         thick = float(m[1]) * (10 if m[2] == "cm" else 1) if m else 10.0
-        tests.append(dict(label=f"Sample {r[0]}: {name.split('&')[0].strip()}, {thick:g} mm",
-                          sub=f"0 g: {r[11][:14] or '-'} · Earth: {r[13][:10] or '-'}",
+        tests.append(dict(label=f"Sample {r[0]}: {shown}, {thick:g} mm",
+                          sub=f"0 g: {logged(r[11])} · Earth: {logged(r[13])}",
                           set=dict(material=key, thick=thick, v=20, o2=22, p=14.7, g=0,
                                    dir="with" if r[10].lower().startswith("con") else "against")))
     out["saffire2"] = tests
