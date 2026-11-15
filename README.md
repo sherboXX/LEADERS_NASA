@@ -35,7 +35,9 @@ ChatGPT for the guide.
 
 The guide answers from built-in rules by default. To let it use ChatGPT, paste an OpenAI
 key in Settings (it stays in your browser), or set `OPENAI_API_KEY` before starting
-`serve.py`. The key is never stored in this repository.
+`serve.py`. For every visitor of the live site to get ChatGPT answers, switch on the shared
+proxy described in [tools/ai-proxy/README.md](tools/ai-proxy/README.md). The key is never
+stored in this repository.
 
 ## Check it
 
