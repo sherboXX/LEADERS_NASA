@@ -77,8 +77,8 @@ worst 190 K.
 It agrees in 85% of cases only because most tests lit; it has no skill at predicting a
 failed ignition.
 
-**BRE.** Ethylene goes out by heat loss in air and at 30% oxygen and burns steadily at 40%,
-which matches the reported behaviour. No table was compared.
+**BRE.** In the model, ethylene goes out by heat loss in air and at 30% oxygen and burns
+steadily at 40%. This was not compared with a table or re-checked against the BRE reports.
 
 ## Jet and Smoke engines
 
@@ -108,7 +108,9 @@ Checked at https://sherboxx.github.io/LEADERS_NASA/ with `tools/sweep.html`, in 
 Chrome.
 
 - All 20 labs start, draw, give finite numbers and find every file they ask for.
-- The station view opens for the three experiments tried (FLEX, Saffire-II, SAME).
+- The station view opens and draws for all 20 experiments (`tools/sweep.html?app=1`:
+  40 pages, no problems). The sweep confirms it loads; where it flies to was looked at for
+  a few experiments only.
 - The guide answers with its built-in rules; a hosted copy has no ChatGPT link unless a
   visitor adds their own key.
 - The architecture page and gallery load.
@@ -118,7 +120,7 @@ Chrome.
 | Page | Files | Download, first visit | Unpacked |
 |---|---|---|---|
 | A lab | 33 to 35 | about 0.6 MB | 2.4 MB |
-| The station view | about 130 | roughly 16 MB | 33 MB |
+| The station view | 90 to 130 | 7 to 9 MB seen, more on a cold cache | 14 to 33 MB |
 
 Later labs load from the browser's cache. The station view is heavy because of the ISS
 geometry; expect a long wait on a slow connection.
@@ -137,12 +139,12 @@ than 27 ms. Whether that happens on a given device has not been measured.
 
 ## Not checked
 
-- **A real phone.** The layout was checked at 390 px wide in a desktop browser only. Open
-  the live address on a phone to settle this.
+- **A real phone.** The layout was checked at 390 px wide in a desktop browser only
+  (`tools/phone.html`). Open the live address on a phone to settle this.
 - **Motion and frame rate.** The checks were stills and scripts in an automated browser
   tab, which runs about one frame a second. No frame rate is claimed.
 - **ChatGPT answers.** The guide's link to ChatGPT has never been exercised with a working
   key.
 - **Other browsers.** Only Chrome on Windows.
-- **Every station view.** Three of twenty were opened on the live site; all twenty are
-  wired according to `check_site.mjs`.
+- **Where each station view lands.** All twenty load; the fly-in to the right module and
+  the text shown there were looked at for a few experiments only.

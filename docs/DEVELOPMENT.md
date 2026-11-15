@@ -124,6 +124,8 @@ The script builds two branches in the team repository without touching its check
   https://sherboxx.github.io/LEADERS_NASA/ a minute or so after the push.
 
 It refuses to commit if anything outside `firelab/` would change, and never force-pushes.
+The document links at the foot of `architecture.html` point at the `freefall-website`
+branch on GitHub; change them to `main` once the branch is merged.
 Files in `.gitignore` (an API key file, caches, private working notes) are left out.
 After a publish, run the sweep on the live address as well: GitHub Pages is case-sensitive
 about file names and Windows is not.
