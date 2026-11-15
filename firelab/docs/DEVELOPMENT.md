@@ -137,6 +137,16 @@ about file names and Windows is not.
 A hosted copy has no server, so the guide there uses the built-in answers unless a visitor
 pastes their own key in Settings.
 
+## AI guide routes
+
+`engines/core/ask.js` asks, in order: a key pasted in Settings (sent straight to OpenAI);
+the shared proxy at `AI_PROXY` in `engines/core/config.js` (`tools/ai-proxy/worker.js` on
+Cloudflare, see its README); `tools/serve.py` when the page is served from this computer;
+otherwise the built-in answers. A route that is missing or whose key is rejected is skipped
+for the rest of the visit, and every request gives up after 30 s, so a deleted proxy only
+means built-in answers. ChatGPT words answers and picks what to plot or open; numbers and
+charts always come from the models.
+
 ## Background music
 
 `engines/core/music.js` plays `audio/freefall-theme.m4a` (MP3 fallback beside it) on every

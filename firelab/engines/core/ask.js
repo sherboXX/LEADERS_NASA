@@ -3,17 +3,24 @@
 // The AI never supplies chart data: it names what to plot and the page computes it from
 // its fitted model and draws it with core/sketch.js.
 //
-// Where the key comes from, in order:
-//   1. Settings > AI guide (stored in this browser, sent straight to api.openai.com)
-//   2. tools/serve.py, which keeps the key on the computer and answers POST /api/ask
+// Where answers come from, in order (the first that works):
+//   1. a key pasted in Settings > AI guide (kept in this browser, sent straight to OpenAI)
+//   2. the site's shared ChatGPT: tools/ai-proxy/worker.js on Cloudflare, whose address is
+//      AI_PROXY in config.js (empty when it is switched off); its key stays on Cloudflare
+//   3. tools/serve.py on this computer, which keeps a local key and answers POST /api/ask
+//   4. otherwise the page's built-in answers
 import { el } from './ui.js';
 import { prefs } from './prefs.js';
 import { animateSketch } from './sketch.js';
 import { ic } from './icons.js';
+import { AI_PROXY } from './config.js';
 
 const OPENAI = 'https://api.openai.com/v1/chat/completions';
-let proxy = null; // null = not tried yet, true = serve.py answers, false = not there
-let denied = null; // the key source OpenAI rejected, so it is not tried again until it changes
+const LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);   // serve.py never runs on a hosted copy
+const TIMEOUT = 30000;
+// Routes found missing (no server here, proxy deleted) or whose key OpenAI rejected; they are
+// skipped until the page is reloaded or a different key is pasted.
+const off = new Set();
 
 function parse(text) {
   try { return JSON.parse(text); } catch { /* not pure JSON */ }
@@ -23,42 +30,64 @@ function parse(text) {
   return { answer: text.trim() };
 }
 
-const source = () => prefs.aiKey || 'server';
-export const hasAI = () => denied !== source() && (!!prefs.aiKey || proxy !== false);
+function routes() {
+  return [
+    prefs.aiKey && { id: `key:${prefs.aiKey.slice(-8)}`, name: 'your API key', url: OPENAI, auth: { Authorization: `Bearer ${prefs.aiKey}` } },
+    AI_PROXY && { id: 'shared', name: "the site's ChatGPT key", url: AI_PROXY, auth: {} },
+    LOCAL && { id: 'local', name: 'the key on this computer', url: new URL('/api/ask', location.origin).href, auth: {} },
+  ].filter((r) => r && !off.has(r.id));
+}
+export const hasAI = () => routes().length > 0;
 
-/** Parsed JSON reply, or null when no AI service is reachable. Throws on API errors. */
+async function send(route, payload) {
+  const stop = new AbortController();
+  const timer = setTimeout(() => stop.abort(), TIMEOUT);
+  try {
+    return await fetch(route.url, { method: 'POST', signal: stop.signal,
+      headers: { 'Content-Type': 'application/json', ...route.auth }, body: JSON.stringify(payload) });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** Parsed JSON reply, or null when no AI service is reachable. Throws with a short reason when
+ *  one was reachable but could not answer (the page then uses its built-in answer). */
 export async function askAI(system, question, history = []) {
   const body = { model: prefs.aiModel || 'gpt-6-luna', response_format: { type: 'json_object' },
     messages: [{ role: 'system', content: system }, ...history, { role: 'user', content: question }] };
-  if (denied === source()) return null;
-  const send = (url, auth, payload) => fetch(url, { method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...auth }, body: JSON.stringify(payload) });
-  let res;
-  let url = OPENAI;
-  let auth = { Authorization: `Bearer ${prefs.aiKey}` };
-  if (prefs.aiKey) {
-    res = await send(url, auth, body);
-  } else {
-    // tools/serve.py only ever runs on this computer; a hosted copy of the site has no server to ask
-    if (proxy === null && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) proxy = false;
-    if (proxy === false) return null;
-    url = new URL('/api/ask', location.origin);
-    auth = {};
-    res = await send(url, auth, body).catch(() => null);
-    if (!res || [404, 405, 501, 503].includes(res.status)) { proxy = false; return null; }
-    proxy = true;
+  let reason = '';
+  for (const route of routes()) {
+    let res;
+    try {
+      res = await send(route, body);
+      if (res.status === 400) { // a model without JSON mode: ask again in plain text
+        const { response_format: _, ...plain } = body;
+        res = await send(route, plain);
+      }
+    } catch (err) {
+      if (err.name === 'AbortError') throw new Error('ChatGPT took too long');
+      off.add(route.id);   // not reachable: no server here, or the proxy is gone
+      continue;
+    }
+    if (res.ok) {
+      const data = await res.json().catch(() => null);
+      const text = data?.choices?.[0]?.message?.content;
+      if (typeof text === 'string') return parse(text);
+      reason = 'the AI service sent an empty answer';
+      continue;
+    }
+    const proxy = route.id === 'shared' || route.id === 'local';
+    if (proxy && [403, 404, 405, 501, 503].includes(res.status)) {
+      off.add(route.id);   // a proxy that is switched off, or has no key behind it
+      if (route.id === 'shared' && res.status === 503) reason = "the site's ChatGPT has no key yet";
+      continue;
+    }
+    if (res.status === 401) { off.add(route.id); reason = `${route.name} was rejected`; continue; }
+    reason = res.status === 429 ? 'too many questions right now'
+      : res.status === 404 ? `the model "${body.model}" was not found` : `the AI service answered ${res.status}`;
   }
-  if (res.status === 400) { // a model without JSON mode: ask again in plain text
-    const { response_format: _, ...plain } = body;
-    res = await send(url, auth, plain);
-  }
-  if (res.status === 401) denied = source();
-  if (!res.ok) {
-    throw new Error(res.status === 401 ? 'the API key was rejected' : res.status === 429 ? 'the API quota is used up'
-      : res.status === 404 ? `the model "${body.model}" was not found` : `the AI service answered ${res.status}`);
-  }
-  const data = await res.json();
-  return parse(data.choices?.[0]?.message?.content || '');
+  if (reason) throw new Error(reason);
+  return null;
 }
 
 /**

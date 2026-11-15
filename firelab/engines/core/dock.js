@@ -5,6 +5,7 @@ import { el, segs } from './ui.js';
 import { prefs, setPref, onPrefs, applyPrefs } from './prefs.js';
 import { ic } from './icons.js';
 import { setMusic } from './music.js';
+import { AI_PROXY } from './config.js';
 
 const wide = matchMedia('(min-width: 1101px)');
 /** A Freefall icon (see icons.js) sized to sit in a line of text. */
@@ -112,7 +113,7 @@ export function buildSettings({ dock, scope, displays = [], links = [] }) {
     el('h4', { text: 'AI guide (ChatGPT)' }),
     field('API key', 'aiKey', { type: 'password', placeholder: 'sk-… (optional)', autocomplete: 'off', spellcheck: 'false' }),
     field('Model', 'aiModel', { type: 'text', placeholder: 'gpt-6-luna', spellcheck: 'false' }),
-    el('p', { class: 'note', text: 'Your key is stored in this browser only and sent only to OpenAI. Leave it empty to use the built-in guide.' }),
+    el('p', { class: 'note', text: `Your key is stored in this browser only and sent only to OpenAI. Leave it empty to use ${AI_PROXY ? "the site's own ChatGPT" : 'the built-in guide'}.` }),
     links.length ? el('p', { class: 'links' }, links.map(([text, href]) => el('a', { href, text }))) : null);
   for (const d of displays) d.apply(!prefs.hide[d.key]);
   return el('section', { class: 'glass settings' },
