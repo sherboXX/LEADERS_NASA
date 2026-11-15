@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Phone preview</title>
+<style>
+  body { margin: 0; padding: 16px; background: #15181d; color: #cfd4da; font: 13px system-ui, sans-serif; display: flex; gap: 24px; align-items: flex-start; }
+  figure { margin: 0; }
+  figcaption { margin-bottom: 8px; }
+  iframe { width: 390px; height: 760px; border: 1px solid #333; border-radius: 12px; background: #000; }
+</style>
+</head>
+<body>
+<!-- Shows both sections at phone width on a desktop screen. Open through the local server. -->
+<figure><figcaption>Experiment, 390 px wide</figcaption><iframe src="../droplet.html" title="Experiment at phone width"></iframe></figure>
+<figure><figcaption>Application, 390 px wide</figcaption><iframe src="../application/index.html?exp=flex&focus=ext" title="Application at phone width"></iframe></figure>
+</body>
+</html>

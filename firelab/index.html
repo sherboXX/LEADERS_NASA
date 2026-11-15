@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Freefall: fire in space, yours to run</title>
+<meta name="theme-color" content="#03060c">
+<link rel="stylesheet" href="engines/core/ui.css">
+<link rel="stylesheet" href="engines/core/chrome.css">
+<style>
+  html, body { height: auto; }
+  body { font-size: 17px; line-height: 1.55; background: radial-gradient(1100px 620px at 78% -8%, rgba(11, 61, 145, 0.55), transparent 62%), radial-gradient(700px 420px at 4% 12%, rgba(252, 61, 33, 0.14), transparent 60%), var(--void); background-attachment: fixed; }
+  main { max-width: 1240px; margin: 0 auto; padding: 26px 22px 70px; }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .bar .brand { font-size: 21px; }
+  .bar a { color: var(--blue); font-size: 15px; }
+  .hero { padding: 54px 0 34px; max-width: 800px; }
+  .hero h1 { margin: 0 0 14px; font: 600 clamp(36px, 5.4vw, 60px)/1.05 var(--font-head); letter-spacing: 0.01em; text-wrap: balance; }
+  .hero p { margin: 0 0 24px; font-size: 20px; color: #d5dbe5; max-width: 60ch; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; }
+  .cta a { display: inline-flex; align-items: center; height: 50px; padding: 0 24px; border-radius: 8px; font: 600 16.5px var(--font-body); text-decoration: none; color: var(--fg); border: 1px solid var(--line-strong); background: var(--glass); }
+  .cta a:hover { background: var(--row-hover); }
+  .cta a.go { background: var(--accent); border-color: var(--accent); color: #1a0a00; }
+  .cta a.go:hover { background: #ff5a40; }
+  .cta .ico { width: 22px; height: 22px; margin-right: 10px; }
+  .tools { justify-content: space-between; flex-wrap: wrap; gap: 12px; margin: 26px 0 16px; }
+  .tools h2 { margin: 0; font: 500 23px var(--font-head); }
+  .filters { display: flex; flex-wrap: wrap; gap: 6px; }
+  .filters button { height: 38px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line-strong); background: none; cursor: pointer; font-size: 15px; color: var(--muted); }
+  .filters button:hover { color: var(--fg); }
+  .filters button[aria-pressed='true'] { background: var(--blue); border-color: var(--blue); color: #04101f; font-weight: 600; }
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .card { height: 100%; display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 4px 14px; padding: 16px; border-radius: 12px; text-decoration: none; color: inherit; transition: transform 0.15s, border-color 0.15s; }
+  .card:hover { transform: translateY(-2px); border-color: var(--blue); }
+  .badge { grid-row: span 2; display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%; border: 1px solid rgba(79, 157, 255, 0.5); background: radial-gradient(circle at 50% 35%, rgba(79, 157, 255, 0.28), rgba(9, 14, 24, 0.2) 70%); }
+  .badge .ico { width: 30px; height: 30px; }
+  .card h3 { margin: 0; font: 600 19px/1.2 var(--font-head); display: flex; align-items: baseline; gap: 8px; }
+  .card h3 small { font: 400 12.5px var(--font-body); color: var(--muted); }
+  .card p { margin: 0; font-size: 15px; line-height: 1.45; color: #cfd6e0; }
+  .meta { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 13px; color: var(--muted); }
+  .meta .pill { font-size: 12.5px; }
+  .pill.detect { background: var(--blue); } .pill.suppress { background: var(--ok); }
+  .meter { flex: 1; height: 9px; border-radius: 2px; position: relative; overflow: hidden; background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.2) 0 1.5px, transparent 1.5px 4px); }
+  .meter i { position: absolute; inset: 0 auto 0 0; background: repeating-linear-gradient(90deg, var(--amber) 0 1.5px, transparent 1.5px 4px); }
+  .foot { margin-top: 34px; font-size: 14px; color: var(--muted); max-width: 80ch; }
+  @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <header class="bar">
+    <div class="brand">FREE<span>FALL</span></div>
+    <a href="architecture.html">How this was built</a>
+  </header>
+
+  <section class="hero">
+    <h1>Fire behaves differently in space. Run the experiments yourself.</h1>
+    <p>Twenty NASA fire experiments from orbit, rebuilt as labs you can play with. Light the flame, change the air, and see where each result keeps a crew safe.</p>
+    <div class="cta">
+      <a class="go" id="start" href="droplet.html?exp=flex">Start with a flame</a>
+      <a id="station" href="application/index.html">Fly through the station</a>
+    </div>
+  </section>
+
+  <div class="tools">
+    <h2>Experiments, ranked by how much they matter for crew fire safety</h2>
+    <div class="filters" id="filters" role="group" aria-label="Show"></div>
+  </div>
+  <ul class="grid" id="grid"></ul>
+  <p class="foot">Results come from NASA's Physical Sciences Informatics database. Each lab runs a simplified model, checked against those results where a table exists; the Result tab in every lab says how far to trust it.</p>
+</main>
+
+<script type="module">
+  import { CATALOG, PILLARS } from './engines/catalog.js';
+  import { ic } from './engines/core/icons.js';
+  import { el } from './engines/core/ui.js';
+  import { applyPrefs } from './engines/core/prefs.js';
+
+  applyPrefs();
+  document.getElementById('start').prepend(ic('flame'));
+  document.getElementById('station').prepend(ic('station'));
+  const grid = document.getElementById('grid');
+  const cards = [...CATALOG].sort((a, b) => b.score - a.score).map((x, i) => {
+    const card = el('li', { 'data-pillar': x.pillar },
+      el('a', { class: 'card glass', href: x.url },
+        el('span', { class: 'badge' }, ic(x.glyph)),
+        el('h3', {}, x.name, el('small', { text: x.psi })),
+        el('p', { text: x.line }),
+        el('div', { class: 'meta' }, el('span', { class: `pill ${x.pillar}`, text: PILLARS[x.pillar] }),
+          el('span', { class: 'meter', role: 'img', 'aria-label': `Relevance ${x.score} out of 100` }, el('i', { style: `width:${x.score}%` })),
+          el('span', { text: `#${i + 1}` }))));
+    grid.append(card);
+    return card;
+  });
+  const filters = document.getElementById('filters');
+  const show = (key) => {
+    for (const c of cards) c.hidden = key !== 'all' && c.dataset.pillar !== key;
+    for (const b of filters.children) b.setAttribute('aria-pressed', String(b.dataset.key === key));
+  };
+  for (const [key, label] of [['all', 'All'], ...Object.entries(PILLARS)]) {
+    filters.append(el('button', { type: 'button', 'data-key': key, 'aria-pressed': 'false', text: label, onclick: () => show(key) }));
+  }
+  show('all');
+</script>
+</body>
+</html>

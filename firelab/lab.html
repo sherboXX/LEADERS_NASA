@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Freefall lab</title>
+<meta name="theme-color" content="#03060c">
+<link rel="stylesheet" href="engines/core/ui.css">
+<link rel="stylesheet" href="engines/core/chrome.css">
+<script type="importmap">
+{ "imports": { "three": "./vendor/three/build/three.module.js", "three/addons/": "./vendor/three/examples/jsm/" } }
+</script>
+</head>
+<body>
+<!-- One page for every engine built on core/lab.js: lab.html?engine=solid&exp=saffire2 -->
+<script type="module">
+  const ENGINES = ['solid', 'smoke', 'jet', 'burner'];
+  const asked = new URLSearchParams(location.search).get('engine');
+  const name = ENGINES.includes(asked) ? asked : ENGINES[0];
+  const [{ createLab }, { default: spec }] = await Promise.all([import('./engines/core/lab.js'), import(`./engines/${name}/spec.js`)]);
+  window.fireLab = await createLab(document.body, spec);
+  document.title = `Freefall: ${window.fireLab.state.plan ? document.querySelector('.title h1').textContent : name}`;
+</script>
+</body>
+</html>

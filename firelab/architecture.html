@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Freefall: how it was built</title>
+<meta name="theme-color" content="#03060c">
+<link rel="stylesheet" href="engines/core/ui.css">
+<link rel="stylesheet" href="engines/core/chrome.css">
+<style>
+  html, body { height: auto; }
+  body { font-size: 15px; line-height: 1.6; }
+  main { max-width: 1180px; margin: 0 auto; padding: 28px 20px 60px; }
+  .top { display: flex; grid-template-columns: none; justify-content: space-between; margin-bottom: 26px; pointer-events: auto; }
+  .top a { color: var(--blue); font-size: 13.5px; }
+  h1 { margin: 0 0 6px; font: 500 34px/1.15 var(--font-head); letter-spacing: -0.01em; text-wrap: balance; }
+  h2 { margin: 44px 0 6px; font: 500 22px/1.25 var(--font-head); }
+  p { margin: 0 0 12px; max-width: 72ch; color: #d5dbe5; }
+  .lede { font-size: 17px; color: var(--fg); }
+  .flow { margin: 14px 0 6px; padding: 10px; overflow-x: auto; }
+  .flow svg { display: block; min-width: 940px; width: 100%; height: auto; font-family: var(--font-body); }
+  .flow .lane { fill: #c9d2df; font: 500 13px var(--font-head); }
+  .flow .box { fill: rgba(255, 255, 255, 0.05); stroke: rgba(255, 255, 255, 0.24); }
+  .flow .data .box { stroke: #4f9dff; }
+  .flow .ai .box { stroke: #b49cff; }
+  .flow .app .box { stroke: #fc3d21; }
+  .flow .t1 { fill: #eef2f7; font-size: 13px; font-weight: 600; }
+  .flow .t2 { fill: #93a0b4; font-size: 11.5px; }
+  .flow .wire { fill: none; stroke: #7f8da3; stroke-width: 1.5; }
+  .flow .tag { fill: #c9d2df; font-size: 11.5px; }
+  .key { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; color: var(--muted); }
+  .key i { display: inline-block; width: 12px; height: 12px; margin-right: 6px; border-radius: 3px; border: 1.5px solid; vertical-align: -1px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 14px 10px 0; border-bottom: 1px solid var(--line); }
+  th { font: 500 13px var(--font-head); color: var(--muted); }
+  td:first-child { width: 22%; color: var(--fg); font-weight: 500; }
+  td { color: #d5dbe5; }
+  code { font-size: 0.92em; color: #c9d2df; }
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div class="brand">FREE<span>FALL</span></div>
+    <a href="index.html">All experiments</a>
+  </header>
+
+  <h1>How Freefall was built</h1>
+  <p class="lede">Freefall turns NASA's microgravity fire experiments into something you can run yourself. Real test results from the Space Station feed a small physics model; the model drives a 3D flame; a guide answers questions; and the station view shows where each result matters.</p>
+
+  <h2>The system as a flow chart</h2>
+  <p>Three paths run through the system. Follow the arrows from left to right.</p>
+  <div class="flow glass"><svg id="chart" role="img" aria-label="Flow chart of the Freefall system: from NASA data to a running experiment, what happens when you open an experiment, and what happens when you ask a question"></svg></div>
+  <p class="key">
+    <span><i style="border-color:#4f9dff"></i>NASA data</span>
+    <span><i style="border-color:rgba(255,255,255,.5)"></i>Freefall code</span>
+    <span><i style="border-color:#b49cff"></i>AI guide</span>
+    <span><i style="border-color:#fc3d21"></i>Station view</span>
+  </p>
+
+  <h2>The same idea as PhET, with real data underneath</h2>
+  <p>PhET simulations from the University of Colorado are the model we followed for how a science simulation should feel: open it, play, and the idea shows itself. Freefall keeps that feel and adds two things PhET does not need: real measurements from orbit, and a place where the result is put to use.</p>
+  <table>
+    <thead><tr><th scope="col">Idea</th><th scope="col">In a PhET simulation</th><th scope="col">In Freefall</th></tr></thead>
+    <tbody>
+      <tr><td>Play first, read later</td><td>The simulation opens ready to use, with no manual.</td><td>A short set of steps shows how the test is done, then one press of Ignite runs a real ISS burn.</td></tr>
+      <tr><td>Two levels of depth</td><td>An Intro screen for the basic idea and a Lab screen with every control.</td><td>Beginner and Advanced in Settings. Advanced adds pressure, measured-against-model numbers and the map of every test.</td></tr>
+      <tr><td>A calm screen</td><td>A few big controls; extra readouts sit behind checkboxes.</td><td>Every panel is minimised. A dock of tabs pops open only what you ask for.</td></tr>
+      <tr><td>Change one thing, see what happens</td><td>Drag a slider and the picture responds at once.</td><td>Move oxygen, add an extinguisher gas or switch gravity on: the flame changes and one line says what that did.</td></tr>
+      <tr><td>Model kept apart from the picture</td><td>A model computes the physics and a separate view draws it.</td><td><code>model.js</code> holds the physics fitted to the tests; <code>scene.js</code> draws the hardware and the flame.</td></tr>
+      <tr><td>Measuring tools</td><td>Rulers, timers and graphs you can switch on.</td><td>Live readings, a chart you can drag through time, and sketches the guide draws on request.</td></tr>
+      <tr><td>Where the numbers come from</td><td>Idealised textbook equations.</td><td>261 real FLEX tests from NASA's PSI database. Pick any one and replay what was measured.</td></tr>
+      <tr><td>Why it matters</td><td>Links to everyday examples in the teaching notes.</td><td>The Application tab flies into the Space Station to the exact place the result is a danger or is put to use.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>How the guide stays honest</h2>
+  <p>The guide can use ChatGPT, but it is never the source of a number. ChatGPT is told the current settings and what the model predicts, and it replies with words plus an instruction such as "plot burn rate against oxygen". Freefall then computes that curve from its own model and draws it. If no key is set, a built-in guide answers the common questions the same way.</p>
+</main>
+
+<script>
+// The flow chart is drawn from this short description so it stays easy to change.
+const COL = 226, ROW = 100, W = 192, H = 56, X0 = 16, Y0 = 44, LANE = 40;
+const lanes = [
+  { row: 0, title: '1 · From NASA data to a running experiment' },
+  { row: 2, title: '2 · What happens when you open an experiment' },
+  { row: 4, title: '3 · What happens when you ask a question' },
+];
+const laneOf = (row) => Math.floor(row / 2);
+const N = {
+  psi: [0, 0, 'data', 'NASA PSI database', 'open results from orbit'],
+  repo: [1, 0, 'data', 'Team data folder', 'test tables and reports'],
+  build: [2, 0, '', 'build_data.py', 'cleans and fits the tests'],
+  json: [3, 0, 'data', 'flex.json', '261 real tests + the fit'],
+  model: [4, 0, '', 'model.js', 'physics fitted to the tests'],
+  core: [2, 1, '', 'core/', 'stage, dock, sketch, steps'],
+  scene: [3, 1, '', 'scene.js', '3D hardware and flame'],
+  engine: [4, 1, '', 'engine.js', 'controls, charts, replay'],
+  user: [0, 2, '', 'Student or engineer', 'opens an experiment'],
+  steps: [1, 2, '', 'Steps video', 'how the test is done'],
+  lab: [2, 2, '', 'The lab', 'Beginner or Advanced'],
+  tab: [3, 2, 'app', 'Application tab', 'where does this matter?'],
+  bridge: [4, 2, 'app', 'bridge.js', 'finds the right place'],
+  finding: [3, 3, 'app', 'Danger or application', 'shown at that module'],
+  console: [4, 3, 'app', 'Freefall Fire Console', 'the ISS, outside and inside'],
+  ask: [0, 4, 'ai', 'Your question', 'in the Ask tab'],
+  key: [1, 4, 'ai diamond', 'API key set?', ''],
+  gpt: [2, 4, 'ai', 'ChatGPT', 'words + what to plot'],
+  local: [2, 5, 'ai', 'Built-in guide', 'keyword rules'],
+  brain: [3, 4, '', 'brain.js', 'real numbers from model.js'],
+  sketch: [4, 4, '', 'sketch.js', 'draws the answer'],
+};
+const E = [
+  ['psi', 'repo'], ['repo', 'build'], ['build', 'json'], ['json', 'model'], ['model', 'engine'], ['core', 'scene'], ['scene', 'engine'],
+  ['user', 'steps'], ['steps', 'lab'], ['lab', 'tab'], ['tab', 'bridge'], ['bridge', 'console'], ['console', 'finding'],
+  ['ask', 'key'], ['key', 'gpt', 'yes'], ['key', 'local', 'no'], ['gpt', 'brain'], ['local', 'brain'], ['brain', 'sketch'],
+];
+const pos = (id) => { const [c, r] = N[id]; return { x: X0 + c * COL, y: Y0 + r * ROW + laneOf(r) * LANE, cx: X0 + c * COL + W / 2, cy: Y0 + r * ROW + laneOf(r) * LANE + H / 2 }; };
+const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+let svg = '<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#7f8da3"/></marker></defs>';
+for (const l of lanes) svg += `<text class="lane" x="${X0}" y="${Y0 + l.row * ROW + laneOf(l.row) * LANE - 14}">${esc(l.title)}</text>`;
+for (const [a, b, label] of E) {
+  const p = pos(a), q = pos(b);
+  const [ca, ra] = N[a], [cb, rb] = N[b];
+  let d, lx, ly;
+  if (ra === rb) {                       // same row: straight across
+    const dir = cb > ca ? 1 : -1;
+    d = `M${p.cx + dir * W / 2} ${p.cy}H${q.cx - dir * (W / 2 + 3)}`; lx = (p.cx + q.cx) / 2; ly = p.cy - 7;
+  } else if (ca === cb) {                // same column: straight down or up
+    const dir = rb > ra ? 1 : -1;
+    d = `M${p.cx} ${p.cy + dir * H / 2}V${q.cy - dir * (H / 2 + 3)}`; lx = p.cx + 14; ly = (p.cy + q.cy) / 2 + 4;
+  } else if (rb > ra) {                  // down, then across
+    d = `M${p.cx} ${p.cy + H / 2}V${q.cy}H${q.x - 3}`; lx = p.cx + 14; ly = p.cy + H / 2 + 18;
+  } else {                               // across, then up
+    d = `M${p.x + W} ${p.cy}H${q.cx}V${q.cy + H / 2 + 3}`; lx = q.cx + 14; ly = q.cy + H / 2 + 18;
+  }
+  svg += `<path class="wire" d="${d}" marker-end="url(#arrow)"/>`;
+  if (label) svg += `<text class="tag" x="${lx}" y="${ly}" text-anchor="middle">${label}</text>`;
+}
+for (const [id, [, , kind, t1, t2]] of Object.entries(N)) {
+  const p = pos(id);
+  const shape = kind.includes('diamond')
+    ? `<path class="box" d="M${p.cx} ${p.y - 8}L${p.x + W - 22} ${p.cy}L${p.cx} ${p.y + H + 8}L${p.x + 22} ${p.cy}z"/>`
+    : `<rect class="box" x="${p.x}" y="${p.y}" width="${W}" height="${H}" rx="8"/>`;
+  svg += `<g class="${kind}">${shape}<text class="t1" x="${p.cx}" y="${t2 ? p.cy - 3 : p.cy + 5}" text-anchor="middle">${esc(t1)}</text>${
+    t2 ? `<text class="t2" x="${p.cx}" y="${p.cy + 15}" text-anchor="middle">${esc(t2)}</text>` : ''}</g>`;
+}
+const chart = document.getElementById('chart');
+chart.setAttribute('viewBox', `0 0 ${X0 * 2 + 4 * COL + W} ${Y0 + 6 * ROW + 2 * LANE}`);
+chart.innerHTML = svg;
+</script>
+</body>
+</html>
