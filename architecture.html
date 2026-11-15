@@ -96,7 +96,7 @@
   <p><b>Real data first.</b> A Python script reads the NASA tables the team collected and writes two small data files: the tests themselves, and the constants fitted to them. The models read those constants, and every lab can replay a logged test next to the model's prediction.</p>
   <p><b>The flame is computed, not painted.</b> A short shader gives the light emitted and absorbed at each point around the fuel. The renderer steps along each line of sight and adds it up, so a thin flame sheet looks bright at its edge and faint face-on, as a real one does. The FLEX scene was then matched frame by frame against NASA's flight video.</p>
   <p><b>Four phases.</b> First a plan and a map of the data. Then one pilot lab, FLEX, fitted to its tests and reviewed. Then the other four engines, the ranked gallery and the link to the station view. Last, checking: every model against the measurements it can be compared with, every page opened by script, and publishing.</p>
-  <p><b>Who did what.</b> The team chose the experiments, gathered the NASA data, built the station view and directed and reviewed the design at each phase. The code for the labs was written with an AI coding assistant (Claude Code) under that direction. ChatGPT is optional and only words the guide's answers.</p>
+  <p><b>Who did what.</b> The team gathered the NASA data, built the station view, and directed and reviewed the design at each phase. The code for the labs was written with an AI coding assistant (Claude Code) under that direction. ChatGPT is optional and only words the guide's answers.</p>
 
   <h2>How it was checked</h2>
   <p>Each model was run against the NASA measurements it can be compared with. The full report, with the limits of each model, is in <a href="docs/VALIDATION.md">docs/VALIDATION.md</a>; <code>node tools/validate.mjs</code> prints the same figures.</p>
@@ -104,7 +104,7 @@
     <thead><tr><th scope="col">Engine</th><th scope="col">Compared with</th><th scope="col">Result</th></tr></thead>
     <tbody>
       <tr><td>Droplet</td><td>261 FLEX tests</td><td>How the burn ends matches in 219 (84%). Burn-rate fit: R&sup2; 0.88 for methanol, 0.65 for heptane.</td></tr>
-      <tr><td>Solid</td><td>9 Saffire-II samples</td><td>Silicone does not burn in orbit (4 of 4) and the cotton blend spreads, as measured. Thin acrylic burned less in orbit than the model says.</td></tr>
+      <tr><td>Solid</td><td>9 Saffire-II samples</td><td>Silicone and Nomex do not burn in orbit (5 of 5) and the cotton blend and thick acrylic do, as measured.</td></tr>
       <tr><td>Burner</td><td>36 Flame Design tests</td><td>Flame temperature within 68 K on average (worst 190 K); flame position within 0.004 on average.</td></tr>
       <tr><td>Burner</td><td>33 CFI-G ignitions</td><td>The model lights all 33; 5 did not light in orbit. It does not predict ignition failures.</td></tr>
       <tr><td>Jet, Smoke</td><td>Reported trends</td><td>No table to compare with. Their Result tabs say so.</td></tr>

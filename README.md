@@ -60,7 +60,8 @@ and open `tools/sweep.html` in the browser to load every page and report any tha
 
 - Experiment data: NASA Physical Sciences Informatics.
 - 3D engine: [Three.js](https://threejs.org) (MIT licence), kept in `vendor/three`.
-- Fonts: Oxanium and Exo 2 (SIL Open Font Licence), kept in `vendor/fonts`.
+- Fonts: Oxanium, Exo 2, Inter and Poppins (SIL Open Font Licence), kept in `vendor/fonts`;
+  see `vendor/fonts/NOTICE.md`.
 - Earth image in the station view: NASA Blue Marble, from Wikimedia Commons.
 - The lab code was written with an AI coding assistant (Claude Code) under the team's
   direction. The guide can optionally use ChatGPT to word its answers; the numbers always
