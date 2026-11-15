@@ -63,7 +63,7 @@ export function createShell(host, { id, title, subtitle, navLabel, cardTitle, ca
   const root = el('div', { class: 'app' }, stageWrap,
     el('div', { class: 'hud' },
       el('header', { class: 'top' },
-        el('a', { class: 'brand', href: 'index.html', title: 'All experiments' }, 'FREE', el('span', { text: 'FALL' })),
+        el('a', { class: 'brand', href: 'index.html#experiments', title: 'All experiments' }, 'FREE', el('span', { text: 'FALL' })),
         el('nav', { class: 'tabs', 'aria-label': 'Section' },
           el('button', { type: 'button', 'aria-pressed': 'true', text: 'Experiment' }), tabApp),
         tools),

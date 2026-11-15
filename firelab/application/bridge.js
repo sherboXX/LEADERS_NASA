@@ -33,8 +33,8 @@ for (const b of document.querySelectorAll('#samples button')) if (/burning plast
 // the brand leads back to the list of experiments, as it does on the experiment pages
 const brand = $('.brand');
 brand.title = 'All experiments';
-brand.addEventListener('click', () => { location.href = '../index.html'; });
-if (!exp) $('.tabs').prepend(el('button', { type: 'button', class: 'xp-tab', text: '‹ All experiments', onclick: () => { location.href = '../index.html'; } }));
+brand.addEventListener('click', () => { location.href = '../index.html#experiments'; });
+if (!exp) $('.tabs').prepend(el('button', { type: 'button', class: 'xp-tab', text: '‹ All experiments', onclick: () => { location.href = '../index.html#experiments'; } }));
 
 // ---------- 2. dock ----------
 const dock = createDock($('.app'), 'app');

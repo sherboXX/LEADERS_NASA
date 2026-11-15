@@ -14,7 +14,8 @@ repository.
 
 | Page | What it is |
 |---|---|
-| `index.html` | Gallery of the 20 experiments, ranked by fire-safety relevance, filtered by Prevention, Detection, Suppression |
+| `index.html` | Start screen: the ISS, a guide you can ask about fire in space, and two tabs, Experiments and Application |
+| `index.html#experiments` | The 20 experiments, ranked by fire-safety relevance, filtered by Prevention, Detection, Suppression |
 | `droplet.html?exp=flex` | Droplet labs: FLEX, FLEX-2, CFI |
 | `lab.html?engine=solid&exp=saffire2` | Every other lab (engines: solid, smoke, jet, burner) |
 | `application/index.html?exp=flex` | The station view: where that experiment matters on the ISS |
