@@ -13,6 +13,7 @@ Run:  python tools/serve.py [port]
 """
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -49,8 +50,42 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.hidden():
             self.send_error(404)
-        else:
+        elif not (self.headers.get("Range") and self.ranged()):
             super().do_GET()
+
+    def ranged(self):
+        """Answer 'Range: bytes=a-b' with 206 so audio and video can seek (the background music
+        resumes where it left off on the next page). False means: send the whole file instead."""
+        path = Path(self.translate_path(self.path))
+        m = re.fullmatch(r"bytes=(\d*)-(\d*)", self.headers["Range"].strip())
+        if not path.is_file() or not m or not (m[1] or m[2]):
+            return False
+        size = path.stat().st_size
+        start, end = (int(m[1]), int(m[2]) if m[2] else size - 1) if m[1] else (max(size - int(m[2]), 0), size - 1)
+        if start >= size:
+            self.send_response(416)
+            self.send_header("Content-Range", f"bytes */{size}")
+            self.end_headers()
+            return True
+        end = min(end, size - 1)
+        self.send_response(206)
+        self.send_header("Content-Type", self.guess_type(str(path)))
+        self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+        self.send_header("Content-Length", str(end - start + 1))
+        self.end_headers()
+        try:
+            with open(path, "rb") as f:
+                f.seek(start)
+                left = end - start + 1
+                while left > 0:
+                    chunk = f.read(min(65536, left))
+                    if not chunk:
+                        break
+                    self.wfile.write(chunk)
+                    left -= len(chunk)
+        except ConnectionError:
+            pass  # the browser cancelled this range, as media players often do
+        return True
 
     def do_HEAD(self):
         if self.hidden():
@@ -82,6 +117,7 @@ class Handler(SimpleHTTPRequestHandler):
 
     def end_headers(self):
         self.send_header("Cache-Control", "no-store")
+        self.send_header("Accept-Ranges", "bytes")
         super().end_headers()
 
     def log_message(self, *args):

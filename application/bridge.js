@@ -12,6 +12,7 @@ import { prefs } from '../engines/core/prefs.js';
 import { createDock, buildSettings, em } from '../engines/core/dock.js';
 import { ic } from '../engines/core/icons.js';
 import { askAI, hasAI } from '../engines/core/ask.js';
+import { startMusic, musicButton } from '../engines/core/music.js';
 
 const $ = (s) => document.querySelector(s);
 const query = new URLSearchParams(location.search);
@@ -53,6 +54,8 @@ const settings = buildSettings({ dock, scope: 'app', links: [['How this was buil
   { key: 'app.vignette', label: 'Darkened edges', apply: (on) => { $('.vignette').hidden = !on; } },
 ] });
 $('.right').append(settings);
+$('.top .tools')?.append(musicButton());
+startMusic();
 dock.add({ id: 'settings', glyph: 'gear', label: 'Settings', panels: [settings], order: 9 });
 
 // ---------- 4. the Ask box through ChatGPT ----------

@@ -21,7 +21,7 @@ SITE = pathlib.Path(__file__).resolve().parent.parent          # .../firelab
 ROOT = SITE.parent                                             # the folder that holds firelab and the repository
 REPO = ROOT / 'LEADERS_NASA'
 SOURCE, PAGES, BASE = 'freefall-website', 'gh-pages', 'origin/main'
-TRAILER = 'Co-Authored-By: Claude Fable 5.2 <noreply@anthropic.com>'
+TRAILER = 'Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>'
 
 
 def git(*args, index=None, tree=None, check=True):

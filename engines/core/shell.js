@@ -5,6 +5,7 @@
 //   bottom = charts        over the stage = the play bar
 import { el } from './ui.js';
 import { createDock, buildSettings, toast, em } from './dock.js';
+import { startMusic, musicButton } from './music.js';
 
 // Line icons (same drawing style as the console).
 const SYMBOLS = {
@@ -51,7 +52,8 @@ export function createShell(host, { id, title, subtitle, navLabel, cardTitle, ca
   const stageWrap = el('div', { class: 'stage-wrap' }, vignette, transport, fade);
   const chip = el('span', { class: 'status' });
   const gear = el('button', { class: 'ibtn', type: 'button', 'aria-label': 'Settings', title: 'Settings' }, icon('gear'));
-  const tools = el('div', { class: 'tools' }, chip, gear);
+  const tools = el('div', { class: 'tools' }, chip, musicButton(), gear);
+  startMusic();
   const tabApp = el('button', { type: 'button', 'aria-pressed': 'false', text: 'Application' });
   const nav = el('nav', { class: 'nav glass', 'aria-label': navLabel });
   const cardRows = el('div', { class: 'rows' });

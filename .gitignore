@@ -2,3 +2,15 @@
 __pycache__/
 # working notes for the build sessions; kept on the author's computer only
 docs/HANDOFF.md
+
+# the architecture report stays on this computer until the team decides to publish it
+docs/report/
+
+# LaTeX build files (the report PDF itself is kept)
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk

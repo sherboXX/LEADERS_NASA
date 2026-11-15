@@ -6,6 +6,7 @@ const DEFAULTS = {
   text: 'large',          // 'large' | 'xl' (there is no smaller size)
   emoji: true,
   intro: true,            // play the steps before the lab opens
+  music: true,            // quiet background music (starts on the first click)
   hide: {},               // display elements and dock tabs switched off, by key
   aiKey: '',              // the user's own OpenAI key; never leaves this browser except to OpenAI
   aiModel: 'gpt-6-luna',

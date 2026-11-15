@@ -133,6 +133,17 @@ about file names and Windows is not.
 A hosted copy has no server, so the guide there uses the built-in answers unless a visitor
 pastes their own key in Settings.
 
+## Background music
+
+`engines/core/music.js` plays `audio/freefall-theme.m4a` (MP3 fallback beside it) on every
+page at 10% volume. Browsers allow sound only after a click, tap or key press, so it fades in
+on the first one. It pauses while the tab is hidden, resumes at the same point on the next
+page (the position is kept in `sessionStorage`), stays silent inside iframes (the phone
+preview and the page sweep), and is switched off with the speaker button in the top bar or in
+Settings (`prefs.music`). Resuming needs a server that answers HTTP range requests: GitHub
+Pages does, `tools/serve.py` does, `python -m http.server` does not (the music then restarts
+on each page).
+
 ## Debugging
 
 Every lab exposes `window.fireLab` in the console: `seek(t)`, `set({ g: 1 })`, `run()`,
