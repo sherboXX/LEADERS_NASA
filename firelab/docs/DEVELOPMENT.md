@@ -7,8 +7,9 @@ this file has the detail.
 ## Layout
 
 ```
-index.html            start screen (ISS background, the guide, Experiments and Application tabs);
-                      #experiments shows the gallery, ranked from engines/catalog.js
+index.html            the list of experiments (index.html#experiments), ranked from engines/catalog.js;
+                      without that hash it forwards to application/index.html?start, the start:
+                      the 3D station, the guide's chat box and two tabs (bridge.js, section 6)
 droplet.html          droplet labs (FLEX, FLEX-2, CFI)
 lab.html              every other lab: ?engine=solid|smoke|jet|burner&exp=<id>
 architecture.html     how it fits together
@@ -19,7 +20,7 @@ engines/
   droplet/            model.js, scene.js, engine.js, brain.js
   solid|smoke|jet|burner/   model.js, scene.js, spec.js
 data/                 flex.json, labs.json: written by tools/build_data.py, do not edit by hand
-img/                  start-screen background: the ISS rendered from the station view
+img/                  a still of the ISS, shown on the start screen while the 3D station loads
 audio/                background music (see below)
 tools/                build, check, serve and publish scripts
 vendor/               Three.js r187 and the fonts

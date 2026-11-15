@@ -11,7 +11,8 @@ import { el } from '../engines/core/ui.js';
 import { prefs } from '../engines/core/prefs.js';
 import { createDock, buildSettings, em } from '../engines/core/dock.js';
 import { ic } from '../engines/core/icons.js';
-import { askAI, hasAI } from '../engines/core/ask.js';
+import { askAI, hasAI, createAsk } from '../engines/core/ask.js';
+import { homeGuide } from '../engines/core/home.js';
 import { startMusic, musicButton } from '../engines/core/music.js';
 
 const $ = (s) => document.querySelector(s);
@@ -141,3 +142,35 @@ function paint() {
 new MutationObserver(paint).observe(brief, { childList: true });
 addEventListener('hashchange', () => setTimeout(paint, 0));
 paint();
+
+// ---------- 6. start mode: the first screen of the site ----------
+// The site opens here with ?start: the station to turn with the mouse or a finger, the guide's
+// chat box in front, and two tabs. Experiments opens the list of labs; Application takes the
+// chat away and shows the whole console.
+if (query.has('start') && !exp) {
+  const app = $('.app');
+  app.classList.add('xp-startmode');
+  const guide = homeGuide('../');
+  const ask = createAsk({
+    placeholder: 'Ask about fire in space',
+    samples: ['Why is fire a ball in space?', 'How is smoke detected in orbit?', 'How do you put out a fire in space?'],
+    system: guide.system,
+    local: guide.local,
+    act: guide.act,
+    onAsk: () => { guide.clear(); reply.classList.add('used'); start.classList.add('asked'); },
+  });
+  const [askForm, askChips, reply] = ask.el;
+  const enter = el('button', { type: 'button' }, ic('station'), 'Application');
+  const start = el('section', { class: 'xp-start', 'aria-label': 'Ask about fire in space' },
+    el('h1', { text: 'Fire behaves differently in space.' }),
+    el('div', { class: 'xp-chat glass' }, askForm, askChips, reply, guide.links),
+    el('nav', { class: 'xp-start-tabs', 'aria-label': 'Go to' },
+      el('a', { href: '../index.html#experiments' }, ic('flask'), 'Experiments'), enter),
+    el('p', { class: 'xp-hint', text: 'Drag to turn the station' }));
+  app.append(start);
+  enter.addEventListener('click', () => {
+    app.classList.remove('xp-startmode');
+    start.remove();
+    history.replaceState(null, '', location.pathname + location.hash);   // a reload now stays in the console
+  });
+}

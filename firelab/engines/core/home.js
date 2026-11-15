@@ -46,7 +46,8 @@ const NAMES = CATALOG.map((x) => {
 
 const mentions = (q, word) => (word.includes(' ') ? q.includes(word) : new RegExp(`\\b${word}`).test(q));
 
-export function homeGuide() {
+/** @param base  prefix for the lab links ('../' when the page lives in application/) */
+export function homeGuide(base = '') {
   const links = el('div', { class: 'home-links' });
 
   const system = () => [
@@ -78,7 +79,7 @@ export function homeGuide() {
     const ids = (Array.isArray(reply.open) ? reply.open : []).filter((id) => byId[id]).slice(0, 3);
     links.replaceChildren(...ids.map((id) => {
       const x = byId[id];
-      return el('a', { href: x.url }, ic(x.glyph), el('span', { text: x.name }), el('small', { text: x.psi }));
+      return el('a', { href: base + x.url }, ic(x.glyph), el('span', { text: x.name }), el('small', { text: x.psi }));
     }));
   }
 

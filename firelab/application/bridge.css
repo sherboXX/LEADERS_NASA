@@ -25,3 +25,45 @@
 /* the icon shows the state; no alarm-red fill while the music plays */
 .ibtn.music-btn[aria-pressed='true'] { background: var(--glass, rgba(14, 20, 32, 0.6)); border-color: var(--line, rgba(255, 255, 255, 0.14)); color: inherit; }
 .ibtn.music-btn[aria-pressed='false'] { opacity: 0.75; }
+
+/* ---- start mode (?start): the first screen of the site ---- */
+.xp-startmode .hud > :not(.top), .xp-startmode .dock, .xp-startmode .top .tabs,
+.xp-startmode .top .tools > :not(.music-btn), .xp-startmode #tags { display: none !important; }
+@media (min-width: 1101px) { .xp-startmode .top .tools { grid-column: 3; justify-self: end; } }   /* keep the speaker on the right */
+/* while the 3D station loads, a still of it stands in */
+.xp-startmode .loading:not([hidden]) { background: #03060c url(../img/home-iss.jpg) 50% 34% / cover no-repeat; place-items: start center; padding-top: 12vh; }
+.xp-start { position: absolute; z-index: 3; left: 50%; bottom: 3vh; transform: translateX(-50%); width: min(920px, calc(100% - 40px)); text-align: center; pointer-events: none; }
+.xp-start .xp-chat, .xp-start .xp-start-tabs { pointer-events: auto; }
+.xp-start h1 { margin: 0 0 16px; font: 600 clamp(28px, 4vw, 46px)/1.1 var(--font-head); letter-spacing: 0.01em; text-wrap: balance; text-shadow: 0 2px 22px rgba(0, 0, 0, 0.9); }
+.xp-start.asked h1 { display: none; }
+.xp-chat { text-align: left; padding: 14px; border-radius: 14px; }
+.xp-chat form { display: flex; gap: 8px; padding: 0; }
+.xp-chat input { flex: 1; min-width: 0; height: 54px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--line-strong); background: rgba(0, 0, 0, 0.45); color: var(--fg); font: 17px var(--font-body); }
+.xp-chat input::placeholder { color: var(--muted); }
+.xp-chat form button { height: 54px; padding: 0 24px; border-radius: 10px; border: 0; background: var(--accent); color: #1a0a00; font: 600 17px var(--font-body); cursor: pointer; }
+.xp-chat form button:hover { background: #ff5a40; }
+.xp-chat .samples { margin-top: 10px; padding: 0; gap: 8px; }
+.xp-chat .samples button { font-size: 15px; padding: 6px 13px; border-radius: 999px; color: #c9d2df; }
+.xp-chat .answer { margin: 12px 0 0; padding: 12px 14px; border-radius: 8px; font-size: 17px; line-height: 1.55; max-height: 30vh; overflow: auto; }
+.xp-chat .answer:not(.used) { display: none; }
+.xp-chat .answer .route { color: var(--blue); font-size: 14px; }
+.home-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.home-links:not(:empty) { margin-top: 10px; }
+.home-links a { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 10px; border-radius: 999px; border: 1px solid rgba(79, 157, 255, 0.55); background: rgba(79, 157, 255, 0.12); color: var(--fg); text-decoration: none; font-size: 15px; }
+.home-links a:hover { background: rgba(79, 157, 255, 0.25); }
+.home-links .ico { width: 20px; height: 20px; }
+.home-links small { color: var(--muted); font-size: 13px; }
+.xp-start-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.xp-start-tabs a, .xp-start-tabs button { display: flex; align-items: center; justify-content: center; gap: 10px; height: 60px; border-radius: 12px; text-decoration: none; color: var(--fg); font: 600 19px var(--font-head); letter-spacing: 0.02em; border: 1px solid var(--line-strong); background: var(--glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.xp-start-tabs a:hover, .xp-start-tabs button:hover { border-color: var(--accent); background: rgba(252, 61, 33, 0.16); }
+.xp-start-tabs .ico { width: 26px; height: 26px; }
+.xp-hint { margin: 10px 0 0; font-size: 13px; color: rgba(255, 255, 255, 0.55); text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9); }
+@media (max-width: 1100px) {
+  .xp-start { position: static; transform: none; width: auto; order: 3; margin: 0 max(16px, env(safe-area-inset-left, 0px)); }
+  .xp-startmode .loading:not([hidden]) { background-image: url(../img/home-iss-small.jpg); padding-top: 0; place-items: center; }
+  .xp-start h1 { font-size: 24px; margin-bottom: 12px; }
+  .xp-startmode .stage-wrap { height: 40vh; min-height: 260px; }   /* chat and tabs fit on a phone screen */
+  .xp-hint { display: none; }
+  .xp-start-tabs a, .xp-start-tabs button { height: 54px; font-size: 17px; }
+  .xp-chat form button { padding: 0 16px; }
+}
