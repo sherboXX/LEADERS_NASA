@@ -485,7 +485,7 @@ export async function createDropletEngine(host, options = {}) {
     { key: 'flex.dark', label: 'Chamber lights off while it burns', apply: (on) => scene3d?.option('dark', on) },
     { key: 'flex.noise', label: 'Camera sensor speckle', apply: (on) => scene3d?.option('noise', on) },
     { key: 'flex.spin', label: 'Slow camera drift', apply: (on) => { if (stage) stage.controls.autoRotate = on && !shell.reduce; } },
-  ], [['All experiments', 'index.html'], ['How this was built', 'architecture.html']]);
+  ], [['All experiments', 'index.html#experiments'], ['How this was built', 'architecture.html']]);
   let seen = false;
   try { seen = !!sessionStorage.getItem(`freefall.intro.${X.id}`); } catch { /* storage blocked */ }
   if (prefs.intro && !seen && options.intro !== false) startIntro();

@@ -66,15 +66,17 @@ export async function askAI(system, question, history = []) {
  * @param local   (question) => { answer, steps?, chart?, set? } without any AI
  * @param sketch  (chart) => sketch spec or null
  * @param act     (reply) => apply reply.set / reply.open
+ * @param onAsk   (question) => called as soon as a question is asked
  * Returns { el: nodes to put in a panel, ask(question) }.
  */
-export function createAsk({ placeholder, samples = [], hint, system, local, sketch, act }) {
+export function createAsk({ placeholder, samples = [], hint, system, local, sketch, act, onAsk }) {
   const input = el('input', { type: 'text', 'aria-label': 'Your question', placeholder, autocomplete: 'off' });
   const answer = el('div', { class: 'answer', 'aria-live': 'polite' }, el('div', { class: 'route', text: 'Guide ready' }), hint);
   const history = [];
   async function ask(question) {
     const q = question.trim();
     if (!q) return;
+    onAsk?.(q);
     answer.classList.add('busy');
     answer.replaceChildren(el('div', { class: 'route', text: 'Thinking…' }), q);
     let reply = null;

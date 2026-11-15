@@ -293,7 +293,7 @@ export async function createLab(host, spec, options = {}) {
   shell.settings([
     { key: `${exp.id}.labels`, label: 'Part labels in 3D', apply: (on) => stage?.showLabels(on) },
     { key: `${exp.id}.spin`, label: 'Slow camera drift', apply: (on) => { if (stage) stage.controls.autoRotate = on && !shell.reduce; } },
-  ], [['All experiments', 'index.html'], ['How this was built', 'architecture.html']]);
+  ], [['All experiments', 'index.html#experiments'], ['How this was built', 'architecture.html']]);
   let seen = false;
   try { seen = !!sessionStorage.getItem(seenKey); } catch { /* storage blocked */ }
   if (prefs.intro && !seen && options.intro !== false) startIntro();

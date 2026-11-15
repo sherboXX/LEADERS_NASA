@@ -7,7 +7,8 @@ this file has the detail.
 ## Layout
 
 ```
-index.html            gallery, ranked from engines/catalog.js
+index.html            start screen (ISS background, the guide, Experiments and Application tabs);
+                      #experiments shows the gallery, ranked from engines/catalog.js
 droplet.html          droplet labs (FLEX, FLEX-2, CFI)
 lab.html              every other lab: ?engine=solid|smoke|jet|burner&exp=<id>
 architecture.html     how it fits together
@@ -18,6 +19,8 @@ engines/
   droplet/            model.js, scene.js, engine.js, brain.js
   solid|smoke|jet|burner/   model.js, scene.js, spec.js
 data/                 flex.json, labs.json: written by tools/build_data.py, do not edit by hand
+img/                  start-screen background: the ISS rendered from the station view
+audio/                background music (see below)
 tools/                build, check, serve and publish scripts
 vendor/               Three.js r187 and the fonts
 docs/                 these notes and the validation report
@@ -37,6 +40,7 @@ relative, so the site works from any folder on any static host.
 | `shell.js`, `dock.js` | The page frame: brand, Experiment/Application tabs, the dock of panels, Settings |
 | `lab.js` | Builds a whole lab page from a spec |
 | `ask.js`, `guide.js`, `sketch.js` | The guide: question in, answer plus a chart or sketch out |
+| `home.js` | The start screen's guide: built-in answers about fire in space, links to the matching experiments, the ChatGPT prompt |
 | `intro.js` | The "steps" walkthrough shown before a lab |
 | `prefs.js` | Saved settings (level, text size, hidden panels), in the browser only |
 | `icons.js` | Every icon, as two-tone vector drawings |

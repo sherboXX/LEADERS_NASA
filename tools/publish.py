@@ -36,12 +36,34 @@ def git(*args, index=None, tree=None, check=True):
     return done.stdout.strip()
 
 
-def tip(branch):
-    return git('rev-parse', '--verify', '--quiet', f'refs/heads/{branch}', check=False) or None
+def contains(commit, other):
+    """True when `other` is `commit` or one of its ancestors."""
+    env = dict(os.environ, GIT_DIR=str(REPO / '.git'), GIT_TERMINAL_PROMPT='0')
+    return subprocess.run(['git', 'merge-base', '--is-ancestor', other, commit], env=env, cwd=str(REPO),
+                          capture_output=True).returncode == 0
+
+
+def tip(branch, ref='refs/heads'):
+    return git('rev-parse', '--verify', '--quiet', f'{ref}/{branch}', check=False) or None
+
+
+def base(branch):
+    """Parent for the next commit on a publish branch: the local branch, unless GitHub has
+    commits it lacks (a teammate pushed, or a setting was changed on GitHub). Then GitHub's
+    tip, so their commits stay in the history and the push is a plain fast-forward."""
+    local, theirs = tip(branch), tip(branch, 'refs/remotes/origin')
+    if not theirs:
+        return local
+    if local and contains(local, theirs):   # GitHub's tip is already in ours: nothing to pick up
+        return local
+    if local != theirs:
+        print(f'{branch}: building on top of new commits from GitHub ({theirs[:8]})')
+    return theirs
 
 
 def commit(branch, tree, parent, message):
     if parent and git('rev-parse', f'{parent}^{{tree}}') == tree:
+        git('update-ref', f'refs/heads/{branch}', parent)
         print(f'{branch}: nothing new')
         return parent
     args = ['commit-tree', tree, '-m', message, '-m', TRAILER]
@@ -59,9 +81,11 @@ def main():
         sys.exit(__doc__)
     message = words[0]
     git('fetch', 'origin', 'main')
+    for b in (SOURCE, PAGES):   # absent on the very first publish, hence check=False
+        git('fetch', 'origin', f'+refs/heads/{b}:refs/remotes/origin/{b}', check=False)
     with tempfile.TemporaryDirectory() as tmp:
         # 1. the source branch: everything already on it (or on main), plus firelab/
-        parent = tip(SOURCE) or git('rev-parse', BASE)
+        parent = base(SOURCE) or git('rev-parse', BASE)
         index = pathlib.Path(tmp) / 'source.index'
         git('read-tree', parent, index=index)
         git('add', '-A', '--', SITE.name, index=index, tree=ROOT)
@@ -73,9 +97,13 @@ def main():
         commit(SOURCE, tree, parent, message)
 
         # 2. the Pages branch: the site alone
+        parent = base(PAGES)
         index = pathlib.Path(tmp) / 'pages.index'
         git('add', '-A', '.', index=index, tree=SITE)
-        commit(PAGES, git('write-tree', index=index), tip(PAGES), message)
+        cname = git('rev-parse', '--verify', '--quiet', f'{parent}:CNAME', check=False) if parent else ''
+        if cname:   # a custom domain set on GitHub (it lives in a CNAME file) stays set
+            git('update-index', '--add', '--cacheinfo', f'100644,{cname},CNAME', index=index)
+        commit(PAGES, git('write-tree', index=index), parent, message)
 
     print(git('diff', '--shortstat', BASE, SOURCE))
     if '--push' in sys.argv:
